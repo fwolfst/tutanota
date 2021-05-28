@@ -84,7 +84,7 @@ function createStorageCapacityBoxAttr(amount: number, freeAmount: number, buyAct
 			}
 		},
 		price: lang.get("emptyString_msg"),
-		originalPrice: lang.get("emptyString_msg"),
+		// originalPrice: lang.get("emptyString_msg"),
 		helpLabel: "emptyString_msg",
 		features: () => [],
 		width: 230,
@@ -99,9 +99,9 @@ function createStorageCapacityBoxAttr(amount: number, freeAmount: number, buyAct
 		}
 		let price = formatPrice(getPriceFromPriceData(newPrice.futurePriceNextPeriod, BookingItemFeatureType.Storage), true)
 		attrs.price = price
-		attrs.originalPrice = price
+		// attrs.originalPrice = price
 		attrs.helpLabel = (neverNull(newPrice.futurePriceNextPeriod).paymentInterval
-			=== "12") ? "pricing.perYear_label" : "pricing.perMonth_label"
+			=== "12") ? "pricing.perMonthPaidYearly_label" : "pricing.perMonth_label"
 		m.redraw()
 	})
 	return {amount, buyOptionBoxAttr: attrs}

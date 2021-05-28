@@ -64,12 +64,13 @@ export function getSubscriptionPrice(data: SubscriptionData, subscription: Subsc
 		if (type === UpgradePriceType.PlanReferencePrice) {
 			monthlyPriceString = prices.monthlyReferencePrice
 			if (data.options.paymentInterval() === 12) {
-				monthsFactor = 12
+				return (Number(monthlyPriceString) * monthsFactor) / 12 - discount
 			}
 		} else if (type === UpgradePriceType.PlanActualPrice) {
 			monthlyPriceString = prices.monthlyPrice
 			if (data.options.paymentInterval() === 12) {
 				discount = Number(prices.firstYearDiscount)
+				return (Number(monthlyPriceString) * monthsFactor) / 12 - discount
 			}
 		} else if (type === UpgradePriceType.PlanNextYearsPrice) {
 			monthlyPriceString = prices.monthlyPrice

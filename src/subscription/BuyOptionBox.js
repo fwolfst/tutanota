@@ -23,7 +23,7 @@ export type BuyOptionBoxAttr = {|
 	// that doesn't occur when you pass in the attrs
 	actionButton: ?(Component | lazy<ButtonAttrs>),
 	price?: string,
-	originalPrice: string,
+	originalPrice?: TranslationKey | lazy<string>,
 	helpLabel: TranslationKey | lazy<string>,
 	features: () => string[],
 	width: number,
@@ -77,20 +77,13 @@ export class BuyOptionBox implements MComponent<BuyOptionBoxAttr> {
 				}, vnode.attrs.heading),
 				m(".text-center.pt.flex.center-vertically.center-horizontally", [
 					vnode.attrs.price ? m("span.h1", vnode.attrs.price) : null,
-					(vnode.attrs.showReferenceDiscount && vnode.attrs.price !== vnode.attrs.originalPrice)
-						? [
-							// This element is for the screen reader because they tend to not announce strikethrough.
-							m("span", {
-								style: {
-									opacity: "0",
-									width: "0",
-									height: "0",
-								},
-							}, lang.get("originalPrice_label") + ": "),
-							m("s.pl", "(" + vnode.attrs.originalPrice + ")"),
-						]
-						: null
 				]),
+				vnode.attrs.price === 0
+					? m(".small.text-center", vnode.attrs.originalPrice
+					? lang.getMaybeLazy(vnode.attrs.originalPrice)
+					: null)
+					: null,
+
 				m(".small.text-center.pb-s", lang.getMaybeLazy(vnode.attrs.helpLabel)),
 				(vnode.attrs.paymentInterval) ? m(SegmentControl, {
 					selectedValue: vnode.attrs.paymentInterval,

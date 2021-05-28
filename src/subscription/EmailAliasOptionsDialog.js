@@ -65,7 +65,7 @@ function createEmailAliasPackageBox(amount: number, freeAmount: number, buyActio
 			}
 		},
 		price: lang.get("emptyString_msg"),
-		originalPrice: lang.get("emptyString_msg"),
+		// originalPrice: lang.get("emptyString_msg"),
 		helpLabel: "emptyString_msg",
 		features: () => [],
 		width: 230,
@@ -80,9 +80,9 @@ function createEmailAliasPackageBox(amount: number, freeAmount: number, buyActio
 		}
 		let price = formatPrice(getPriceFromPriceData(newPrice.futurePriceNextPeriod, BookingItemFeatureType.Alias), true)
 		attrs.price = price
-		attrs.originalPrice = price
+		// attrs.originalPrice = price
 		attrs.helpLabel = (neverNull(newPrice.futurePriceNextPeriod).paymentInterval
-			=== "12") ? "pricing.perYear_label" : "pricing.perMonth_label"
+			=== "12") ? "pricing.perMonthPaidYearly_label" : "pricing.perMonth_label"
 		m.redraw()
 	})
 	return {amount, buyOptionBoxAttr: attrs}
