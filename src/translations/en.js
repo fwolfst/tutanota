@@ -985,6 +985,7 @@ export default {
 		"pricing.mailAddressAliasesShort_label": "{amount} aliases",
 		"pricing.monthly_label": "Monthly",
 		"pricing.perMonth_label": "per month",
+		"pricing.perMonthPaidYearly_label": "per month - paid yearly",
 		"pricing.perYear_label": "per year",
 		"pricing.privateUse_label": "Private",
 		"pricing.select_action": "Select",

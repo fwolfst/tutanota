@@ -106,7 +106,7 @@ export class SubscriptionSelector implements MComponent<SubscriptionSelectorAttr
 				? getActiveSubscriptionActionButtonReplacement()
 				: selectorAttrs.actionButtons.Free,
 			price: formatPrice(0, true),
-			originalPrice: formatPrice(0, true),
+			originalPrice: "pricing.perMonthPaidYearly_label",
 			helpLabel: "pricing.upgradeLater_msg",
 			features: () => [
 				lang.get("pricing.comparisonUsersFree_msg"),
@@ -176,7 +176,7 @@ export class SubscriptionSelector implements MComponent<SubscriptionSelectorAttr
 				? getActiveSubscriptionActionButtonReplacement()
 				: getActionButtonBySubscription(selectorAttrs.actionButtons, targetSubscription),
 			price: getFormattedSubscriptionPrice(selectorAttrs, targetSubscription, UpgradePriceType.PlanActualPrice),
-			originalPrice: getFormattedSubscriptionPrice(selectorAttrs, targetSubscription, UpgradePriceType.PlanReferencePrice),
+			originalPrice: selectorAttrs.options.paymentInterval() === 12 ? "pricing.perMonthPaidYearly_label" : "pricing.perMonth_label",
 			helpLabel: selectorAttrs.options.businessUse() ? "pricing.basePriceExcludesTaxes_msg" : "pricing.basePriceIncludesTaxes_msg",
 			features: () => featuresToBeOrdered,
 			width: selectorAttrs.boxWidth,
