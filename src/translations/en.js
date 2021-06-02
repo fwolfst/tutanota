@@ -958,6 +958,7 @@ export default {
 		"price_label": "Price",
 		"pricing.basePriceExcludesTaxes_msg": "Base price. Excludes taxes.",
 		"pricing.basePriceIncludesTaxes_msg": "Base price. Includes taxes.",
+		"pricing.businessTemplates_msg": "Add email templates",
 		"pricing.businessUse_label": "Business",
 		"pricing.comparisonAddUser_msg": "Add user ({1})",
 		"pricing.comparisonContactFormPro_msg": "Contact forms ({price})",

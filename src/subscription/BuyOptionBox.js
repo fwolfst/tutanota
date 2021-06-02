@@ -10,6 +10,7 @@ import type {SegmentControlItem} from "../gui/base/SegmentControl"
 import {SegmentControl} from "../gui/base/SegmentControl"
 import type {ButtonAttrs} from "../gui/base/ButtonN"
 import {ButtonN} from "../gui/base/ButtonN"
+import {formatPrice} from "./PriceUtils"
 
 const PaymentIntervalItems: SegmentControlItem<number>[] = [
 	{name: lang.get("pricing.yearly_label"), value: 12},
@@ -64,7 +65,7 @@ export class BuyOptionBox implements MComponent<BuyOptionBoxAttr> {
 					'border-radius': '3px'
 				}
 			}, [
-				(vnode.attrs.showReferenceDiscount && vnode.attrs.price !== vnode.attrs.originalPrice)
+				(vnode.attrs.paymentInterval ? vnode.attrs.paymentInterval() === 12 : null)
 					? m(".ribbon-vertical", m(".text-center.b.h4", {style: {'padding-top': px(22)}}, "%"))
 					: null,
 				m(".h4.text-center.dialog-header.dialog-header-line-height.flex.col.center-horizontally", {
@@ -78,7 +79,7 @@ export class BuyOptionBox implements MComponent<BuyOptionBoxAttr> {
 				m(".text-center.pt.flex.center-vertically.center-horizontally", [
 					vnode.attrs.price ? m("span.h1", vnode.attrs.price) : null,
 				]),
-				vnode.attrs.price === 0
+				vnode.attrs.price !== formatPrice(0,true)
 					? m(".small.text-center", vnode.attrs.originalPrice
 					? lang.getMaybeLazy(vnode.attrs.originalPrice)
 					: null)
