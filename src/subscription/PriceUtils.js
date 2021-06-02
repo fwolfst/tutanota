@@ -64,13 +64,12 @@ export function getSubscriptionPrice(data: SubscriptionData, subscription: Subsc
 		if (type === UpgradePriceType.PlanReferencePrice) {
 			monthlyPriceString = prices.monthlyReferencePrice
 			if (data.options.paymentInterval() === 12) {
-				return (Number(monthlyPriceString) * monthsFactor) / 12 - discount
+				monthsFactor = 12
 			}
 		} else if (type === UpgradePriceType.PlanActualPrice) {
 			monthlyPriceString = prices.monthlyPrice
 			if (data.options.paymentInterval() === 12) {
 				discount = Number(prices.firstYearDiscount)
-				return (Number(monthlyPriceString) * monthsFactor) / 12 - discount
 			}
 		} else if (type === UpgradePriceType.PlanNextYearsPrice) {
 			monthlyPriceString = prices.monthlyPrice
@@ -79,7 +78,11 @@ export function getSubscriptionPrice(data: SubscriptionData, subscription: Subsc
 		} else if (type === UpgradePriceType.ContactFormPrice) {
 			monthlyPriceString = prices.contactFormPriceMonthly
 		}
-		return Number(monthlyPriceString) * monthsFactor - discount
+		if(data.options.paymentInterval() === 12) {
+			return (Number(monthlyPriceString) * monthsFactor) / 12 - discount
+		} else {
+			return Number(monthlyPriceString) * monthsFactor - discount
+		}
 	} else { // Free plan
 		return 0
 	}
