@@ -811,7 +811,7 @@ export const ClientType = Object.freeze({
 	Desktop: "1",
 	App: "2"
 })
-export type ClientTypeEnum = $Values<typeof ClientType>;
+export type ClientTypeEnum = $Values<typeof ClientType>
 
 export function getClientType(): ClientTypeEnum {
 	return isApp()
@@ -820,3 +820,10 @@ export function getClientType(): ClientTypeEnum {
 			? ClientType.Desktop
 			: ClientType.Browser
 }
+
+export const ExternalImageRule = Object.freeze({
+	None: "0",
+	Allow: "1",
+	Block: "2"
+})
+export type ExternalImageRuleEnum = $Values<typeof ExternalImageRule>
