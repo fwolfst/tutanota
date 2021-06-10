@@ -10,7 +10,7 @@ import {
 	ReplyType
 } from "../../api/common/TutanotaConstants"
 import type {RecipientInfo} from "../../api/common/RecipientInfo"
-import {isExternal} from "../../api/common/RecipientInfo"
+import {hasExternalRecipients, isExternal} from "../../api/common/RecipientInfo"
 import {
 	AccessBlockedError,
 	LockedError,
@@ -686,7 +686,7 @@ export class SendMailModel {
 	}
 
 	containsExternalRecipients(): boolean {
-		return this.allRecipients().some(r => isExternal(r))
+		return hasExternalRecipients(this.allRecipients())
 	}
 
 	getExternalRecipients(): Array<RecipientInfo> {

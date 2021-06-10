@@ -15,7 +15,7 @@ import {aes128Decrypt, aes128Encrypt, ENABLE_MAC, IV_BYTE_LENGTH} from "./Aes"
 // $FlowIgnore[untyped-import]
 import {AssociationType, Cardinality, Type, ValueType} from "../../common/EntityConstants"
 import {assertWorkerOrNode} from "../../common/Env"
-import {uncompress} from "../lz4"
+import {compress, uncompress} from "../Compression"
 import {TypeRef} from "../../common/utils/TypeRef";
 import {promiseMap} from "../../common/utils/PromiseUtils"
 
@@ -145,7 +145,10 @@ export function encryptValue(valueName: string, valueType: ModelValue, value: an
 	} else if (valueType.encrypted) {
 		let bytes = value
 		if (valueType.type !== ValueType.Bytes) {
-			bytes = stringToUtf8Uint8Array(convertJsToDbType(valueType.type, value))
+			const dbType = convertJsToDbType(valueType.type, value)
+			bytes = valueType.type === ValueType.CompressedString
+				? base64ToUint8Array(dbType)
+				: stringToUtf8Uint8Array(dbType)
 		}
 		return uint8ArrayToBase64(aes128Encrypt((sk: any), bytes, random.generateRandomData(IV_BYTE_LENGTH), true,
 			ENABLE_MAC))
@@ -185,7 +188,7 @@ export function convertJsToDbType(type: typeof ValueType, value: any): Base64 | 
 	} else if (type === ValueType.Date) {
 		return value.getTime().toString()
 	} else if (type === ValueType.CompressedString) {
-		throw new ProgrammingError("Compression is not implemented yet")
+		return compressString(value)
 	} else {
 		return value
 	}
@@ -205,6 +208,10 @@ export function convertDbToJsType(type: typeof ValueType, value: Base64 | string
 	}
 }
 
+function compressString(uncompressed: string): Base64 {
+	return uint8ArrayToBase64(compress(stringToUtf8Uint8Array(uncompressed)))
+}
+
 function decompressString(compressed: Uint8Array): string {
 	if (compressed.length === 0) {
 		return ""
@@ -212,7 +219,6 @@ function decompressString(compressed: Uint8Array): string {
 	const output = uncompress(compressed)
 	return utf8Uint8ArrayToString(output)
 }
-
 
 export function encryptBytes(sk: Aes128Key, value: Uint8Array): Uint8Array {
 	return aes128Encrypt(sk, value, random.generateRandomData(IV_BYTE_LENGTH), true, ENABLE_MAC)

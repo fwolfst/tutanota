@@ -17,6 +17,10 @@ export type RecipientInfo = {|
 	resolveContactPromise: ?Promise<?Contact> // Null if resolving contact is finished
 |}
 
+export function hasExternalRecipients(recipients: $ReadOnlyArray<RecipientInfo>): boolean {
+	return recipients.some(r => isExternal(r))
+}
+
 export function isExternal(recipientInfo: RecipientInfo): boolean {
 	return recipientInfo.type === RecipientInfoType.EXTERNAL
 }
