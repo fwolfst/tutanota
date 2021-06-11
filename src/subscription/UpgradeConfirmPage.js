@@ -51,13 +51,14 @@ export class UpgradeConfirmPage implements WizardPageN<UpgradeSubscriptionData> 
 			? lang.get("net_label")
 			: lang.get("gross_label")
 
-		const price = formatPrice(Number(attrs.data.price), true) + " " + (attrs.data.options.paymentInterval() === 12
-			? lang.get("pricing.perYear_label")
-			: lang.get("pricing.perMonth_label")) + " (" + netOrGross + ")"
+		const price = formatPrice(Number(attrs.data.price) * attrs.data.options.paymentInterval() === 12 ? 12 : 1, true) + " "
+			+ (attrs.data.options.paymentInterval() === 12
+				? lang.get("pricing.perYear_label")
+				: lang.get("pricing.perMonth_label")) + " (" + netOrGross + ")"
 		const priceFieldAttrs = {
 			label: "priceFirstYear_label",
 			value: stream(price),
-			disabeld: true,
+			disabled: true,
 		}
 
 		const paymentMethodFieldAttrs = {

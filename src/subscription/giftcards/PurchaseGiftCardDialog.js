@@ -94,7 +94,7 @@ class GiftCardPurchaseView implements MComponent<GiftCardPurchaseViewAttrs> {
 								}
 							},
 							price: formatPrice(parseFloat(value), true),
-							originalPrice: formatPrice(parseFloat(value), true),
+							originalPrice: "pricing.perYear_label",
 							helpLabel: () => lang.get(withSubscriptionAmount === 0
 								? "giftCardOptionTextA_msg"
 								: "giftCardOptionTextB_msg",
