@@ -58,6 +58,7 @@ import {TemplatePopupModel} from "../../templates/model/TemplatePopupModel"
 import {createKnowledgeBaseDialogInjection, createOpenKnowledgeBaseButtonAttrs} from "../../knowledgebase/view/KnowledgeBaseDialog"
 import {KnowledgeBaseModel} from "../../knowledgebase/model/KnowledgeBaseModel"
 import {styles} from "../../gui/styles"
+import {ofClass} from "../../api/common/utils/PromiseUtils"
 
 export type MailEditorAttrs = {
 	model: SendMailModel,
@@ -215,7 +216,7 @@ export class MailEditor implements MComponent<MailEditorAttrs> {
 								label: "download_action",
 								click: () => file._type !== "DataFile" // it's a TutanotaFile
 									? fileController.downloadAndOpen(downcast(file), true)
-									                .catch(FileOpenError, () => Dialog.error("canNotOpenFileOnDevice_msg"))
+									                .catch(ofClass(FileOpenError, () => Dialog.error("canNotOpenFileOnDevice_msg")))
 									: noOp,
 								type: ButtonType.Dropdown
 							}
@@ -507,9 +508,9 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 
 	const save = () => {
 		return model.saveDraft(true, MailMethod.NONE, showProgressDialog)
-		            .catch(UserError, err => Dialog.error(() => err.message))
-		            .catch(FileNotFoundError, () => Dialog.error("couldNotAttachFile_msg"))
-		            .catch(PreconditionFailedError, () => Dialog.error("operationStillActive_msg"))
+		            .catch(ofClass(UserError, err => Dialog.error(() => err.message)))
+		            .catch(ofClass(FileNotFoundError, () => Dialog.error("couldNotAttachFile_msg")))
+		            .catch(ofClass(PreconditionFailedError, () => Dialog.error("operationStillActive_msg")))
 	}
 	const send = () => {
 		try {
@@ -518,7 +519,7 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 				Dialog.confirm,
 				showProgressDialog)
 			     .then(success => {if (success) dialog.close() })
-			     .catch(UserError, (err) => Dialog.error(() => err.message))
+			     .catch(ofClass(UserError, (err) => Dialog.error(() => err.message)))
 		} catch (e) {
 			Dialog.error(() => e.message)
 		}

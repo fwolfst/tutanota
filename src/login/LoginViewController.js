@@ -41,6 +41,7 @@ import {isNotificationCurrentlyActive, loadOutOfOfficeNotification} from "../api
 import type {OutOfOfficeNotification} from "../api/entities/tutanota/OutOfOfficeNotification"
 import {showMoreStorageNeededOrderDialog} from "../misc/SubscriptionDialogs"
 import {themeManager} from "../gui/theme"
+import {ofClass} from "../api/common/utils/PromiseUtils"
 
 assertMainOrNode()
 
@@ -129,7 +130,7 @@ export class LoginViewController implements ILoginViewController {
 							                                        deviceConfig.delete(mailAddress)
 						                                        }
 					                                        })
-					                                        .catch(NotFoundError, e => console.log("session already deleted"))
+					                                        .catch(ofClass(NotFoundError, e => console.log("session already deleted")))
 				                           }
 			                           }).finally(() => secondFactorHandler.closeWaitingForSecondFactorDialog())
 			this._handleSession(showProgressDialog("login_msg", this._loginPromise), () => {
@@ -293,7 +294,7 @@ export class LoginViewController implements ILoginViewController {
 								}
 							}).then(function () {
 								properties.lastUpgradeReminder = new Date()
-								update(properties).catch(LockedError, noOp)
+								update(properties).catch(ofClass(LockedError, noOp))
 							})
 						}
 					})

@@ -28,6 +28,7 @@ import {locator} from "./MainLocator"
 import type {AccountingInfo} from "../entities/sys/AccountingInfo"
 import type {CustomerInfo} from "../entities/sys/CustomerInfo"
 import {isSameId} from "../common/utils/EntityUtils";
+import {ofClass} from "../common/utils/PromiseUtils"
 
 assertMainOrNode()
 
@@ -272,11 +273,11 @@ export function initUserController(
 		.all([
 			loadRoot(TutanotaPropertiesTypeRef, user.userGroup.group),
 			load(UserSettingsGroupRootTypeRef, user.userGroup.group)
-				.catch(NotFoundError, () =>
+				.catch(ofClass(NotFoundError, () =>
 					setup(null, Object.assign(createUserSettingsGroupRoot(), {
 						_ownerGroup: user.userGroup.group
 					}))
-						.then(() => load(UserSettingsGroupRootTypeRef, user.userGroup.group)))
+						.then(() => load(UserSettingsGroupRootTypeRef, user.userGroup.group))))
 		])
 		.then(([props, userSettingsGroupRoot]) =>
 			new UserController(user, userGroupInfo, sessionId, props, accessToken, persistentSession, userSettingsGroupRoot)
