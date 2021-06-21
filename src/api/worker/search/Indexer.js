@@ -3,7 +3,7 @@ import type {GroupTypeEnum} from "../../common/TutanotaConstants"
 import {getMembershipGroupType, GroupType, NOTHING_INDEXED_TIMESTAMP, OperationType} from "../../common/TutanotaConstants"
 import {NotAuthorizedError} from "../../common/error/RestError"
 import {EntityEventBatchTypeRef} from "../../entities/sys/EntityEventBatch"
-import type {DbKey, DbTransaction, DatabaseEntry, ObjectStoreName} from "./DbFacade"
+import type {DatabaseEntry, DbKey, DbTransaction, ObjectStoreName} from "./DbFacade"
 import {b64UserIdHash, DbFacade} from "./DbFacade"
 import type {DeferredObject} from "../../common/utils/Utils"
 import {defer, downcast, neverNull, noOp} from "../../common/utils/Utils"
@@ -406,7 +406,7 @@ export class Indexer {
 					           return null
 				           })
 			}) // sequentially to avoid rate limiting
-			.then((data) => data.filter(r => r != null))
+			.then((data) => data.filter(Boolean))
 	}
 
 	/**
@@ -511,7 +511,7 @@ export class Indexer {
 		})
 	}
 
-	_processEntityEvents(batch: QueuedBatch): Promise<void> {
+	_processEntityEvents(batch: QueuedBatch): Promise<*> {
 		const {events, groupId, batchId} = batch
 		return this
 			.db.initialized.then(() => {
@@ -526,7 +526,7 @@ export class Indexer {
 					return Promise.resolve()
 				}
 				markStart("processEntityEvents")
-				let groupedEvents: Map<TypeRef<any>, EntityUpdate[]> = events.reduce((all: Map<TypeRef<any>, EntityUpdate[]>, update: EntityUpdate) => {
+				let groupedEvents: Map<TypeRef<any>, EntityUpdate[]> = events.reduce((all, update) => {
 					if (isSameTypeRefByAttr(MailTypeRef, update.application, update.type)) {
 						getFromMap(all, MailTypeRef, () => []).push(update)
 					} else if (isSameTypeRefByAttr(ContactTypeRef, update.application, update.type)) {

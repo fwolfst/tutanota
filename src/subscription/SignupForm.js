@@ -14,6 +14,7 @@ import {PasswordForm} from "../settings/PasswordForm"
 import type {CheckboxAttrs} from "../gui/base/CheckboxN"
 import {CheckboxN} from "../gui/base/CheckboxN"
 import {neverNull} from "../api/common/utils/Utils"
+import type {TranslationKey} from "../misc/LanguageViewModel"
 import {lang} from "../misc/LanguageViewModel"
 import type {DialogHeaderBarAttrs} from "../gui/base/DialogHeaderBar"
 import {DialogHeaderBar} from "../gui/base/DialogHeaderBar"
@@ -29,7 +30,6 @@ import {HttpMethod} from "../api/common/EntityFunctions"
 import {RegistrationCaptchaServiceReturnTypeRef} from "../api/entities/sys/RegistrationCaptchaServiceReturn"
 import {createRegistrationCaptchaServiceData} from "../api/entities/sys/RegistrationCaptchaServiceData"
 import {uint8ArrayToBase64} from "../api/common/utils/Encoding"
-import type {TranslationKey} from "../misc/LanguageViewModel"
 
 export type SignupFormAttrs = {
 	/** Handle a new account signup. if readonly then the argument will always be null */
@@ -171,7 +171,7 @@ function renderTermsLabel(): Children {
 /**
  * @return Signs the user up, if no captcha is needed or it has been solved correctly
  */
-function signup(mailAddress: string, pw: string, registrationCode: string, isBusinessUse: boolean, isPaidSubscription: boolean, campaign: ?string): Promise<NewAccountData> {
+function signup(mailAddress: string, pw: string, registrationCode: string, isBusinessUse: boolean, isPaidSubscription: boolean, campaign: ?string): Promise<?NewAccountData> {
 	return showWorkerProgressDialog(worker, "createAccountRunning_msg", worker.generateSignupKeys().then(keyPairs => {
 		return runCaptcha(mailAddress, isBusinessUse, isPaidSubscription, campaign).then(regDataId => {
 			if (regDataId) {
