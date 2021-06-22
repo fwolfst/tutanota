@@ -98,7 +98,8 @@ class ClientDetector {
 			typeof Symbol !== "undefined" &&
 			typeof Uint8Array !== "undefined" &&
 			typeof Proxy !== "undefined" &&
-			typeof Reflect !== "undefined"
+			typeof Reflect !== "undefined" &&
+			typeof Promise.prototype.finally !== "undefined"
 		)
 	}
 
