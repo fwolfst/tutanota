@@ -422,8 +422,7 @@ export class Indexer {
 	_loadNewEntities(groupIdToEventBatches: {groupId: Id, eventBatchIds: Id[]}[]): Promise<void> {
 		const batchesOfAllGroups: QueuedBatch[] = []
 		const lastLoadedBatchIdInGroup = new Map<Id, Id>()
-		return Promise
-			.each(groupIdToEventBatches, (groupIdToEventBatch) => {
+		return promiseMap(groupIdToEventBatches, (groupIdToEventBatch) => {
 				if (groupIdToEventBatch.eventBatchIds.length > 0) {
 					let startId = this._getStartIdForLoadingMissedEventBatches(groupIdToEventBatch.eventBatchIds)
 					return this._entity.loadAll(EntityEventBatchTypeRef, groupIdToEventBatch.groupId, startId)
@@ -542,7 +541,7 @@ export class Indexer {
 				}, new Map())
 
 				markStart("processEvent")
-				return Promise.each(groupedEvents.entries(), ([key, value]) => {
+				return promiseMap(groupedEvents.entries(), ([key, value]) => {
 					let promise = Promise.resolve()
 					if (isSameTypeRef(UserTypeRef, key)) {
 						return this._processUserEntityEvents(value)

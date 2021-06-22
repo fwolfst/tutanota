@@ -117,7 +117,7 @@ import {getCoordsOfMouseOrTouchEvent} from "../../gui/base/GuiUtils"
 import type {Link} from "../../misc/HtmlSanitizer"
 import {stringifyFragment} from "../../gui/HtmlUtils"
 import {IndexingNotSupportedError} from "../../api/common/error/IndexingNotSupportedError"
-import {ofClass} from "../../api/common/utils/PromiseUtils"
+import {ofClass, promiseMap} from "../../api/common/utils/PromiseUtils"
 
 assertMainOrNode()
 
@@ -931,8 +931,7 @@ export class MailViewer {
 					           m.redraw()
 					           const filesToLoad = files.filter(file => inlineCids.find(inline => file.cid === inline))
 					           const inlineImages: InlineImages = new Map()
-					           return Promise
-						           .each(filesToLoad, (file) => worker.downloadFileContent(file).then(dataFile => {
+					           return promiseMap(filesToLoad, (file) => worker.downloadFileContent(file).then(dataFile => {
 							           const blob = new Blob([dataFile.data], {
 								           type: dataFile.mimeType
 							           })
