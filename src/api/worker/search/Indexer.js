@@ -322,7 +322,7 @@ export class Indexer {
 				this._groupInfo.suggestionFacade.load(),
 				this._whitelabelChildIndexer.suggestionFacade.load()
 			])
-		})).return()
+		})).then(noOp)
 	}
 
 
@@ -598,7 +598,7 @@ export class Indexer {
 				})
 			}
 			return Promise.resolve()
-		})).return()
+		})).then(noOp)
 	}
 }
 

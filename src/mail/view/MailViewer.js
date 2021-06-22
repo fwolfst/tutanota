@@ -531,7 +531,7 @@ export class MailViewer {
 							headers: headers.join("\n"),
 						})
 						return serviceRequestVoid(TutanotaService.ListUnsubscribeService, HttpMethod.POST, postData)
-							.return(true)
+							.then(() => true)
 					})
 				} else {
 					return false
@@ -940,7 +940,7 @@ export class MailViewer {
 								           file,
 								           url: URL.createObjectURL(blob)
 							           })
-						           })).return(inlineImages)
+						           })).then(() => inlineImages)
 				           })
 				           .catch(ofClass(NotFoundError, e => {
 					           console.log("could load attachments as they have been moved/deleted already", e)

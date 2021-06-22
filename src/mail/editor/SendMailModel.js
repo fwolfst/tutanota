@@ -189,7 +189,7 @@ export class SendMailModel {
 		this._entityEventReceived = (updates) => {
 			return Promise.each(updates, update => {
 				return this._handleEntityEvent(update)
-			}).return()
+			}).then(noOp)
 		}
 		this._eventController.addEntityListener(this._entityEventReceived)
 
@@ -938,7 +938,7 @@ export class SendMailModel {
 		return Promise.all(this.allRecipients().map(recipientInfo => {
 			return resolveRecipientInfo(this._worker, recipientInfo).then(recipientInfo => {
 				if (recipientInfo.resolveContactPromise) {
-					return recipientInfo.resolveContactPromise.return(recipientInfo)
+					return recipientInfo.resolveContactPromise.then(() => recipientInfo)
 				} else {
 					return recipientInfo
 				}

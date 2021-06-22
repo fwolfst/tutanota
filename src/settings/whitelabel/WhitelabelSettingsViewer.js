@@ -5,7 +5,7 @@ import {LazyLoaded} from "../../api/common/utils/LazyLoaded"
 import type {Customer} from "../../api/entities/sys/Customer"
 import {CustomerTypeRef} from "../../api/entities/sys/Customer"
 import {load, loadRange, serviceRequest, update} from "../../api/main/Entity"
-import {getCustomMailDomains, getWhitelabelDomain, neverNull} from "../../api/common/utils/Utils"
+import {getCustomMailDomains, getWhitelabelDomain, neverNull, noOp} from "../../api/common/utils/Utils"
 import type {CustomerInfo} from "../../api/entities/sys/CustomerInfo"
 import {CustomerInfoTypeRef} from "../../api/entities/sys/CustomerInfo"
 import {logins} from "../../api/main/LoginController"
@@ -358,6 +358,6 @@ export class WhitelabelSettingsViewer implements UpdatableSettingsViewer {
 			} else if (isUpdateForTypeRef(BookingTypeRef, update)) {
 				return this._updateFields()
 			}
-		}).return()
+		}).then(noOp)
 	}
 }
