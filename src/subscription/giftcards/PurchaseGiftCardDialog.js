@@ -37,6 +37,7 @@ import {client} from "../../misc/ClientDetector"
 import {filterInt, noOp} from "../../api/common/utils/Utils"
 import {isIOSApp} from "../../api/common/Env"
 import {formatPrice, getSubscriptionPrice} from "../PriceUtils";
+import {ofClass} from "../../api/common/utils/PromiseUtils"
 
 export type GiftCardPurchaseViewAttrs = {
 	purchaseLimit: number,
@@ -147,7 +148,7 @@ class GiftCardPurchaseView implements MComponent<GiftCardPurchaseViewAttrs> {
 				attrs.outerDialog().close()
 				showGiftCardToShare(giftCard)
 			})
-			.catch(PreconditionFailedError, e => {
+			.catch(ofClass(PreconditionFailedError, e => {
 				const message = e.data
 				if (message && message.startsWith("giftcard")) {
 					switch (message) {
@@ -164,11 +165,11 @@ class GiftCardPurchaseView implements MComponent<GiftCardPurchaseViewAttrs> {
 				} else {
 					throw new UserError(getPreconditionFailedPaymentMsg(e.data))
 				}
-			})
-			.catch(BadGatewayError, e => {
+			}))
+			.catch(ofClass(BadGatewayError, e => {
 				throw new UserError("paymentProviderNotAvailableError_msg")
-			})
-			.catch(UserError, showUserError)
+			}))
+			.catch(ofClass(UserError, showUserError))
 	}
 }
 
@@ -273,5 +274,5 @@ export function showPurchaseGiftCardDialog(): Promise<void> {
 
 	return showProgressDialog("loading_msg", loadDialogPromise)
 		.then(dialog => {dialog && dialog.show()})
-		.catch(UserError, showUserError)
+		.catch(ofClass(UserError, showUserError))
 }

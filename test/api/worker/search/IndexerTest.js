@@ -4,7 +4,7 @@ import {createUser, UserTypeRef} from "../../../../src/api/entities/sys/User"
 import {createGroupMembership} from "../../../../src/api/entities/sys/GroupMembership"
 import {DbTransaction} from "../../../../src/api/worker/search/DbFacade"
 import {GroupType, NOTHING_INDEXED_TIMESTAMP, OperationType} from "../../../../src/api/common/TutanotaConstants"
-import {Indexer, Metadata} from "../../../../src/api/worker/search/Indexer"
+import {GroupDataOS, Indexer, Metadata, MetaDataOS} from "../../../../src/api/worker/search/Indexer"
 import {createEntityEventBatch, EntityEventBatchTypeRef} from "../../../../src/api/entities/sys/EntityEventBatch"
 import {NotAuthorizedError} from "../../../../src/api/common/error/RestError"
 import {createEntityUpdate} from "../../../../src/api/entities/sys/EntityUpdate"
@@ -17,7 +17,7 @@ import {OutOfSyncError} from "../../../../src/api/common/error/OutOfSyncError"
 import {generatedIdToTimestamp, timestampToGeneratedId} from "../../../../src/api/common/utils/Encoding"
 import {random} from "../../../../src/api/worker/crypto/Randomizer"
 import {defer, downcast} from "../../../../src/api/common/utils/Utils"
-import {browserDataStub, mock, spy} from "../../TestUtils"
+import {assertThrows, browserDataStub, mock, spy} from "../../TestUtils"
 import type {QueuedBatch} from "../../../../src/api/worker/search/EventQueue"
 import {EntityRestClient} from "../../../../src/api/worker/rest/EntityRestClient"
 import {MembershipRemovedError} from "../../../../src/api/common/error/MembershipRemovedError"
@@ -25,7 +25,6 @@ import {WhitelabelChildTypeRef} from "../../../../src/api/entities/sys/Whitelabe
 import {fixedIv} from "../../../../src/api/worker/crypto/CryptoUtils"
 import {GENERATED_MAX_ID, getElementId} from "../../../../src/api/common/utils/EntityUtils";
 import {TypeRef} from "../../../../src/api/common/utils/TypeRef";
-import {GroupDataOS, MetaDataOS} from "../../../../src/api/worker/search/Indexer";
 
 const restClientMock: EntityRestClient = downcast({})
 
@@ -245,32 +244,26 @@ o.spec("Indexer test", () => {
 		})
 	})
 
-	o("_updateGroups disable MailIndexing in case of a deleted mail group", function (done) {
+	o("_updateGroups disable MailIndexing in case of a deleted mail group", async function () {
 		let indexer = mock(new Indexer(restClientMock, (null: any), browserDataStub, restClientMock), (mock) => {
 			mock.disableMailIndexing = o.spy(() => Promise.resolve())
 		})
 
 		let user = createUser()
 		let groupDiff = {deletedGroups: [{id: "groupId", type: GroupType.Mail}], newGroups: []}
-		indexer._updateGroups(user, groupDiff).then(() => {
-			o(true).equals(false)
-		}).catch(MembershipRemovedError, (e) => {
-			done()
-		})
+		const e = await assertThrows(() => indexer._updateGroups(user, groupDiff))
+		o(Object.getPrototypeOf(e)).equals(MembershipRemovedError.prototype)
 	})
 
-	o("_updateGroups disable MailIndexing in case of a deleted contact group", function (done) {
+	o("_updateGroups disable MailIndexing in case of a deleted contact group", async function () {
 		let indexer = mock(new Indexer(restClientMock, (null: any), browserDataStub, restClientMock), (mock) => {
 			mock.disableMailIndexing = o.spy(() => Promise.resolve())
 		})
 
 		let user = createUser()
 		let groupDiff = {deletedGroups: [{id: "groupId", type: GroupType.Contact}], newGroups: []}
-		indexer._updateGroups(user, groupDiff).then(() => {
-			o(true).equals(false)
-		}).catch(MembershipRemovedError, (e) => {
-			done()
-		})
+		const e = await assertThrows(() => indexer._updateGroups(user, groupDiff))
+		o(Object.getPrototypeOf(e)).equals(MembershipRemovedError.prototype)
 	})
 
 	o("_updateGroups don't disable MailIndexing in case no mail or contact group has been deleted", function (done) {
@@ -668,7 +661,7 @@ o.spec("Indexer test", () => {
 		})
 	})
 
-	o("_loadNewEntities out of sync", function (done) {
+	o("_loadNewEntities out of sync", async function () {
 		const newestBatchId = "L0JcCmx----0"
 		const oldestBatchId = "L0JcCmw----0"
 		let groupIdToEventBatches = [
@@ -695,10 +688,9 @@ o.spec("Indexer test", () => {
 			mock._processEntityEvents = o.spy()
 		})
 
-		indexer._loadNewEntities(groupIdToEventBatches).catch(OutOfSyncError, e => {
-			o(indexer._processEntityEvents.callCount).equals(0)
-			done()
-		})
+		const e = await assertThrows(() => indexer._loadNewEntities(groupIdToEventBatches))
+		o(Object.getPrototypeOf(e)).equals(OutOfSyncError.prototype)
+		o(indexer._processEntityEvents.callCount).equals(0)
 	})
 
 	o("_loadPersistentGroupData", function (done) {
