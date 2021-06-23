@@ -60,10 +60,12 @@ export interface ILoginViewController {
 export class LoginViewController implements ILoginViewController {
 	view: LoginView;
 	_loginPromise: Promise<void>;
+	_isLoggingIn: boolean
 
 	constructor(view: LoginView) {
 		this.view = view;
 		this._loginPromise = Promise.resolve()
+		this._isLoggingIn = false
 
 		if (isApp()) {
 			worker.initialized.then(() => {
@@ -76,14 +78,17 @@ export class LoginViewController implements ILoginViewController {
 	}
 
 	autologin(credentials: Credentials): void {
-		if (this._loginPromise.isPending()) return
+		if (this._isLoggingIn) return
 		this.view.invalidCredentials = false
 		this.view.accessExpired = false
+		this._isLoggingIn = true
 		this._loginPromise = showProgressDialog("login_msg", worker.initialized.then(() => {
 			return this._handleSession(logins.resumeSession(credentials), () => {
 				this.view._showLoginForm(credentials.mailAddress)
 			})
-		}))
+		})).finally(() => {
+			this._isLoggingIn = false
+		})
 	}
 
 
@@ -107,7 +112,7 @@ export class LoginViewController implements ILoginViewController {
 	}
 
 	formLogin(): void {
-		if (this._loginPromise.isPending()) return
+		if (this._isLoggingIn) return
 		let mailAddress = this.view.mailAddress()
 		let pw = this.view.password()
 		if (mailAddress === "" || pw === "") {
@@ -117,6 +122,7 @@ export class LoginViewController implements ILoginViewController {
 			this.view.invalidCredentials = false
 			this.view.accessExpired = false
 			let persistentSession = this.view.savePassword()
+			this._isLoggingIn = true
 			this._loginPromise = logins.createSession(mailAddress, pw, client.getIdentifier(), persistentSession, true)
 			                           .then(newCredentials => {
 				                           let storedCredentials = deviceConfig.get(mailAddress)
@@ -132,7 +138,11 @@ export class LoginViewController implements ILoginViewController {
 					                                        })
 					                                        .catch(ofClass(NotFoundError, e => console.log("session already deleted")))
 				                           }
-			                           }).finally(() => secondFactorHandler.closeWaitingForSecondFactorDialog())
+			                           })
+			                           .finally(() => {
+				                           secondFactorHandler.closeWaitingForSecondFactorDialog()
+				                           this._isLoggingIn = false
+			                           })
 			this._handleSession(showProgressDialog("login_msg", this._loginPromise), () => {
 			})
 		}
