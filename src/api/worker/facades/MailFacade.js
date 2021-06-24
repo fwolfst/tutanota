@@ -27,7 +27,7 @@ import {DraftUpdateReturnTypeRef} from "../../entities/tutanota/DraftUpdateRetur
 import type {SendDraftData} from "../../entities/tutanota/SendDraftData"
 import {createSendDraftData} from "../../entities/tutanota/SendDraftData"
 import type {RecipientInfo} from "../../common/RecipientInfo"
-import {hasExternalRecipients, isExternalSecureRecipient, RecipientInfoType} from "../../common/RecipientInfo"
+import {isExternalSecureRecipient, RecipientInfoType} from "../../common/RecipientInfo"
 import {RecipientsNotFoundError} from "../../common/error/RecipientsNotFoundError"
 import {generateKeyFromPassphrase, generateRandomSalt} from "../crypto/Bcrypt"
 import {KeyLength} from "../crypto/CryptoConstants"
@@ -224,9 +224,6 @@ export class MailFacade {
 		                     replyTos, changedAttachments, existingAttachmentIds, mailGroupKey
 	                     }: _makeDraftDataParams): Promise<DraftData> {
 
-		// We only compress when there are no external recipients,
-		// because decompression is not yet ready serverside
-		const doCompress = !hasExternalRecipients(toRecipients.concat(ccRecipients).concat(bccRecipients))
 		return createDraftData({
 			subject,
 			senderMailAddress,
@@ -234,8 +231,8 @@ export class MailFacade {
 			confidential,
 			method,
 			replyTos,
-			bodyText: doCompress ? "" : body,
-			compressedBodyText: doCompress ? body : null,
+			bodyText: "",
+			compressedBodyText: body,
 			toRecipients: this._recipientInfoToDraftRecipient(toRecipients),
 			ccRecipients: this._recipientInfoToDraftRecipient(ccRecipients),
 			bccRecipients: this._recipientInfoToDraftRecipient(bccRecipients),
