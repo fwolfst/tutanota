@@ -11,13 +11,12 @@ import {
 } from "../../common/utils/Encoding"
 import {random} from "./Randomizer"
 import {aes128Decrypt, aes128Encrypt, ENABLE_MAC, IV_BYTE_LENGTH} from "./Aes"
-
-// $FlowIgnore[untyped-import]
 import {AssociationType, Cardinality, Type, ValueType} from "../../common/EntityConstants"
 import {assertWorkerOrNode} from "../../common/Env"
 import {uncompress} from "../lz4"
 import {TypeRef} from "../../common/utils/TypeRef";
 import {promiseMap} from "../../common/utils/PromiseUtils"
+import type {ModelValue, TypeModel, ValueTypeEnum} from "../../common/EntityTypes"
 
 assertWorkerOrNode()
 
@@ -177,7 +176,7 @@ export function decryptValue(valueName: string, valueType: ModelValue, value: ?B
 	}
 }
 
-export function convertJsToDbType(type: typeof ValueType, value: any): Base64 | string {
+export function convertJsToDbType(type: $Values<typeof ValueType>, value: any): Base64 | string {
 	if (type === ValueType.Bytes && value != null) {
 		return uint8ArrayToBase64((value: any))
 	} else if (type === ValueType.Boolean) {
@@ -191,7 +190,7 @@ export function convertJsToDbType(type: typeof ValueType, value: any): Base64 | 
 	}
 }
 
-export function convertDbToJsType(type: typeof ValueType, value: Base64 | string): any {
+export function convertDbToJsType(type: $Values<typeof ValueType>, value: Base64 | string): any {
 	if (type === ValueType.Bytes) {
 		return base64ToUint8Array((value: any))
 	} else if (type === ValueType.Boolean) {

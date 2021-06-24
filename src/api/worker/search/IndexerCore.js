@@ -57,6 +57,7 @@ import type {EntityUpdate} from "../../entities/sys/EntityUpdate"
 import {elementIdPart, firstBiggerThanSecond, listIdPart} from "../../common/utils/EntityUtils";
 import {TypeRef} from "../../common/utils/TypeRef";
 import {ElementDataOS, GroupDataOS, MetaDataOS, SearchIndexMetaDataOS, SearchIndexOS, SearchIndexWordsIndex} from "./Indexer"
+import type {TypeModel} from "../../common/EntityTypes"
 
 const SEARCH_INDEX_ROW_LENGTH = 1000
 

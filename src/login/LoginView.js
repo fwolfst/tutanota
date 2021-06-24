@@ -5,7 +5,7 @@ import {client} from "../misc/ClientDetector"
 import {assertMainOrNode, isApp, isDesktop, isTutanotaDomain} from "../api/common/Env"
 import {lang} from "../misc/LanguageViewModel"
 import type {DeferredObject} from "../api/common/utils/Utils"
-import {defer, neverNull} from "../api/common/utils/Utils"
+import {defer, mapNullable, neverNull} from "../api/common/utils/Utils"
 import {deviceConfig} from "../misc/DeviceConfig"
 import {ExpanderButtonN, ExpanderPanelN} from "../gui/base/Expander"
 import {BootIcons} from "../gui/base/icons/BootIcons"
@@ -24,6 +24,7 @@ import {showUserError} from "../misc/ErrorHandlerImpl"
 import {LoginForm} from "./LoginForm"
 import {CredentialsSelector} from "./CredentialsSelector"
 import {themeManager} from "../gui/theme"
+import {getWhitelabelCustomizations} from "../misc/WhitelabelCustomizations"
 
 assertMainOrNode()
 
@@ -454,18 +455,15 @@ export class LoginView {
 }
 
 export function getWhitelabelRegistrationDomains(): string[] {
-	return (whitelabelCustomizations && whitelabelCustomizations.registrationDomains) ?
-		whitelabelCustomizations.registrationDomains : []
+	return mapNullable(getWhitelabelCustomizations(window), (c) => c.registrationDomains) || []
 }
 
 export function getImprintLink(): ?string {
-	return (whitelabelCustomizations) ?
-		whitelabelCustomizations.imprintUrl : lang.getInfoLink("about_link")
+	return mapNullable(getWhitelabelCustomizations(window), (c) => c.imprintUrl) || lang.getInfoLink("about_link")
 }
 
 export function getPrivacyStatementLink(): ?string {
-	return (whitelabelCustomizations) ?
-		whitelabelCustomizations.privacyStatementUrl : lang.getInfoLink("privacy_link")
+	return mapNullable(getWhitelabelCustomizations(window), (c) => c.privacyStatementUrl) || lang.getInfoLink("privacy_link")
 }
 
 

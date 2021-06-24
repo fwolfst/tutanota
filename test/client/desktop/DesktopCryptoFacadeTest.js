@@ -3,12 +3,11 @@ import n from "../nodemocker"
 import o from "ospec"
 import {DesktopCryptoFacade} from "../../../src/desktop/DesktopCryptoFacade"
 import {stringToUtf8Uint8Array, uint8ArrayToBase64} from "../../../src/api/common/utils/Encoding"
-import {aes128Encrypt, aes128RandomKey, IV_BYTE_LENGTH} from "../../../src/api/worker/crypto/Aes"
 import {keyToBase64, uint8ArrayToBitArray} from "../../../src/api/worker/crypto/CryptoUtils"
-import {random} from "../../../src/api/worker/crypto/Randomizer"
 import {arrayEquals} from "../../../src/api/common/utils/ArrayUtils"
 import {downcast} from "../../../src/api/common/utils/Utils"
 import type {CryptoFunctions} from "../../../src/desktop/CryptoFns"
+import type {TypeModel} from "../../../src/api/common/EntityTypes"
 
 o.spec("DesktopCryptoFacadeTest", () => {
 	const data = "uint8_somedata"

@@ -11,6 +11,7 @@ import crypto from "crypto"
 import {decryptAndMapToInstance} from "../api/worker/crypto/InstanceMapper"
 import {EntropySrc} from "../api/common/TutanotaConstants"
 import {random} from "../api/worker/crypto/Randomizer"
+import type {TypeModel} from "../api/common/EntityTypes"
 
 export interface CryptoFunctions {
 	aes128Decrypt(key: Aes128Key, encryptedBytes: Uint8Array, usePadding: boolean): Uint8Array;

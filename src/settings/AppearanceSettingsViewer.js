@@ -20,6 +20,7 @@ import {Mode} from "../api/common/Env"
 import type {LanguageCode} from "../misc/LanguageViewModel"
 import type {ThemeId} from "../gui/theme"
 import {themeManager} from "../gui/theme"
+import type {UpdatableSettingsViewer} from "./SettingsView"
 
 
 export class AppearanceSettingsViewer implements UpdatableSettingsViewer {

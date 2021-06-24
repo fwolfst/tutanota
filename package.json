@@ -1,6 +1,6 @@
 {
 	"name": "tutanota",
-	"version": "3.84.6",
+	"version": "3.84.7",
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
@@ -23,7 +23,7 @@
 		"linkifyjs": "^3.0.0-beta.3",
 		"luxon": "1.26.0",
 		"mithril": "2.0.4",
-		"@tutao/oxmsg": "0.0.6",
+		"@tutao/oxmsg": "https://github.com/tutao/oxmsg.git#6e704f571b2307bb91e9af1020624a02b85b3f33",
 		"qrcode-svg": "1.0.0",
 		"squire-rte": "1.11.1",
 		"systemjs": "6.8.3"
@@ -49,7 +49,7 @@
 		"electron-updater": "4.3.5",
 		"express": "4.17.1",
 		"express-ws": "4.0.0",
-		"flow-bin": "0.135.0 ",
+		"flow-bin": "0.152.0",
 		"fs-extra": "8.1.0",
 		"full-icu": "1.3.4",
 		"glob": "7.1.6",

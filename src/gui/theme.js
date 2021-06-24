@@ -3,8 +3,9 @@ import {getLogoSvg} from "./base/icons/Logo"
 import {defaultThemeId, DeviceConfig, deviceConfig} from "../misc/DeviceConfig"
 import stream from "mithril/stream/stream.js"
 import {assertMainOrNodeBoot} from "../api/common/Env"
-import {downcast} from "../api/common/utils/Utils"
+import {downcast, mapNullable} from "../api/common/utils/Utils"
 import m from "mithril"
+import {getWhitelabelCustomizations} from "../misc/WhitelabelCustomizations"
 
 assertMainOrNodeBoot()
 
@@ -256,8 +257,9 @@ class ThemeManager {
 
 		// If being accessed from a custom domain, the definition of whitelabelCustomizations is added to index.js serverside upon request
 		// see RootHandler::applyWhitelabelFileModifications.
-		if (typeof whitelabelCustomizations !== "undefined" && whitelabelCustomizations && whitelabelCustomizations.theme) {
-			this.updateCustomTheme(whitelabelCustomizations.theme)
+		const customTheme = mapNullable(getWhitelabelCustomizations(window), c => c.theme)
+		if (customTheme) {
+			this.updateCustomTheme(customTheme)
 		} else if (this.themeId === "custom") {
 			// if they have a custom theme set but no custom theme exists, we should set them back to light theme
 			this.setThemeId("light")
