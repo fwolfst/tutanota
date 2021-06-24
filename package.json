@@ -16,7 +16,6 @@
 		"postinstall": "node ./buildSrc/compileKeytar"
 	},
 	"dependencies": {
-		"bluebird": "3.7.2",
 		"dompurify": "2.2.7",
 		"electron-builder": "22.11.4",
 		"keytar": "7.2.0",

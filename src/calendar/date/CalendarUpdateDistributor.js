@@ -2,7 +2,13 @@
 import {lang} from "../../misc/LanguageViewModel"
 import {makeInvitationCalendarFile} from "../export/CalendarImporter"
 import type {CalendarAttendeeStatusEnum, MailMethodEnum} from "../../api/common/TutanotaConstants"
-import {CalendarMethod, ConversationType, getAttendeeStatus, MailMethod, mailMethodToCalendarMethod} from "../../api/common/TutanotaConstants"
+import {
+	CalendarMethod,
+	ConversationType,
+	getAttendeeStatus,
+	MailMethod,
+	mailMethodToCalendarMethod
+} from "../../api/common/TutanotaConstants"
 import {calendarAttendeeStatusSymbol, formatEventDuration, getTimeZone} from "./CalendarUtils"
 import type {CalendarEvent} from "../../api/entities/tutanota/CalendarEvent"
 import {stringToUtf8Uint8Array, uint8ArrayToBase64} from "../../api/common/utils/Encoding"
@@ -116,7 +122,7 @@ export class CalendarMailDistributor implements CalendarUpdateDistributor {
 			              })
 			              .then(model => {
 				              model.attachFiles([makeInvitationCalendarFile(event, CalendarMethod.REPLY, new Date(), getTimeZone())])
-				              return model.send(MailMethod.ICAL_REPLY)
+				              return model.send(MailMethod.ICAL_REPLY).then(noOp)
 			              })
 			              .finally(() => this._sendEnd())
 		} else {
@@ -139,6 +145,7 @@ export class CalendarMailDistributor implements CalendarUpdateDistributor {
 		sendMailModel.setBody(body)
 		this._sendStart()
 		return sendMailModel.send(method)
+		                    .then(noOp)
 		                    .finally(() => this._sendEnd())
 	}
 
