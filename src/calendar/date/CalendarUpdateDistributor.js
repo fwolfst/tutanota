@@ -141,12 +141,12 @@ export class CalendarMailDistributor implements CalendarUpdateDistributor {
 		                    .finally(() => this._sendEnd())
 	}
 
-	_windowUnsubscribe: ?(() => void)
+	_windowUnsubscribe: ?(() => boolean)
 
 	_sendStart() {
 		this._countDownLatch++
 		if (this._countDownLatch === 1) {
-			this._windowUnsubscribe = windowFacade.addWindowCloseListener(noOp)
+			this._windowUnsubscribe = windowFacade.addWindowCloseListener(() => true)
 		}
 	}
 
@@ -154,7 +154,6 @@ export class CalendarMailDistributor implements CalendarUpdateDistributor {
 		this._countDownLatch--
 		if (this._countDownLatch === 0 && this._windowUnsubscribe) {
 			this._windowUnsubscribe()
-			this._windowUnsubscribe = null
 		}
 	}
 }

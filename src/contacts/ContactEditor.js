@@ -63,7 +63,7 @@ export class ContactEditor {
 	birthday: Stream<string>
 
 	_newContactIdReceiver: ?(contactId: Id) => mixed
-	windowCloseUnsubscribe: () => mixed
+	windowCloseUnsubscribe: () => boolean
 	_isNewContact: boolean
 
 	/**
@@ -106,11 +106,11 @@ export class ContactEditor {
 
 		this.dialog = this._createDialog()
 
-		this.windowCloseUnsubscribe = noOp
+		this.windowCloseUnsubscribe = () => false
 	}
 
 	oncreate() {
-		this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {})
+		this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true)
 	}
 
 	onremove() {

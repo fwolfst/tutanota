@@ -51,7 +51,7 @@ export class ContactFormRequestDialog {
 	_notificationEmailAddress: string;
 	_passwordForm: PasswordForm;
 	_privacyPolicyAccepted: Stream<boolean>;
-	_windowCloseUnsubscribe: () => void;
+	_windowCloseUnsubscribe: () => boolean;
 
 	/**
 	 * Creates a new draft message. Invoke initAsResponse or initFromDraft if this message should be a response
@@ -65,7 +65,7 @@ export class ContactFormRequestDialog {
 		this._statisticFields = new Map()
 		this._subject = ""
 		this._notificationEmailAddress = ""
-		this._windowCloseUnsubscribe = noOp
+		this._windowCloseUnsubscribe = () => false
 		this._passwordForm = new PasswordForm(false, false, true, "contactFormEnterPasswordInfo_msg")
 
 		this._privacyPolicyAccepted = stream(false)
@@ -95,7 +95,6 @@ export class ContactFormRequestDialog {
 		                     }).setCloseHandler(() => this._close())
 
 		worker.createContactFormUserGroupData()
-
 	}
 
 	view: Function = () => {
@@ -134,7 +133,7 @@ export class ContactFormRequestDialog {
 
 		return m("#mail-editor.text.pb", {
 			oncreate: vnode => {
-				this._windowCloseUnsubscribe = windowFacade.addWindowCloseListener(noOp)
+				this._windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true)
 			},
 			onremove: vnode => this._windowCloseUnsubscribe(),
 			ondragover: (ev) => {

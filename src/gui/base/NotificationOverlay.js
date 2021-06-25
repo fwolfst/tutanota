@@ -10,19 +10,17 @@ import {ButtonN, ButtonType} from "./ButtonN"
 
 assertMainOrNode()
 
-type NotificationOverlayAttrs = {|
+export type NotificationOverlayAttrs = {|
 	message: Component,
-	buttons: Array<ButtonAttrs>,
-	closeFunction: () => void
+	buttons: Array<ButtonAttrs>
 |}
 
 
 const notificationQueue = []
 let currentAnimationTimeout: ?TimeoutID = null
 
-class NotificationOverlay implements MComponent<NotificationOverlayAttrs> {
-
-	view(vnode: Vnode<NotificationOverlayAttrs>) {
+export class NotificationOverlay implements MComponent<NotificationOverlayAttrs> {
+	view(vnode: Vnode<NotificationOverlayAttrs>): ?Children {
 		return m(".notification-overlay-content.flex.flex-column.flex-space-between", [
 			m(vnode.attrs.message),
 			m(".flex.justify-end.flex-wrap",
@@ -50,8 +48,9 @@ function showNextNotification() {
 	const width = window.innerWidth
 	const margin = (width - Math.min(400, width)) / 2
 	const allButtons = buttons.slice()
-	const closeFunction = displayOverlay({top: px(0), left: px(margin), right: px(margin)}, {
-			view: () => m(NotificationOverlay, {message, closeFunction, buttons: allButtons})
+	const overlayRect = {top: px(0), left: px(margin), right: px(margin)}
+	const closeFunction = displayOverlay(() => overlayRect, {
+			view: () => m(NotificationOverlay, {message, buttons: allButtons})
 		},
 		(dom) => transform(transform.type.translateY, -dom.offsetHeight, 0),
 		(dom) => transform(transform.type.translateY, 0, -dom.offsetHeight)

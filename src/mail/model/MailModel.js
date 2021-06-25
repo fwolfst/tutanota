@@ -332,4 +332,5 @@ export class MailModel {
 	isFinalDelete(folder: ?MailFolder): boolean {
 		return folder != null && (folder.folderType === MailFolderType.TRASH || folder.folderType === MailFolderType.SPAM)
 	}
+
 }

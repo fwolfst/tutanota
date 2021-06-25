@@ -155,10 +155,10 @@ export class ContactFormEditor {
 			middle: () => lang.get(this._createNew ? "createContactForm_label" : "editContactForm_label")
 		}
 
-		let windowCloseUnsubscribe
+		let windowCloseUnsubscribe = () => false
 		this.view = () => {
 			return m("#contact-editor.pb", {
-				oncreate: vnode => windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {}),
+				oncreate: vnode => windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true),
 				onremove: vnode => windowCloseUnsubscribe()
 			}, [
 				m(".h4.mt-l", lang.get("emailProcessing_label")),

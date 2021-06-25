@@ -22,7 +22,7 @@ export class ContactMergeView {
 	contact1: Contact;
 	contact2: Contact;
 	resolveFunction: Function; // must be called after the user action
-	windowCloseUnsubscribe: () => mixed
+	windowCloseUnsubscribe: () => boolean
 
 	constructor(contact1: Contact, contact2: Contact) {
 		this.contact1 = contact1
@@ -89,7 +89,7 @@ export class ContactMergeView {
 		}
 
 		return m("#contact-editor", {
-			oncreate: vnode => this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {}),
+			oncreate: vnode => this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true),
 			onremove: vnode => this.windowCloseUnsubscribe(),
 		}, [
 			m(".flex-center.mt", [

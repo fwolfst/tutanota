@@ -772,6 +772,7 @@ export default {
 		"messageTooLong_msg": "The message is too long. A maximum of {length} characters is allowed",
 		"message_label": "Message",
 		"microphoneUsageDescription_msg": "Used when recording a video as attachment.",
+		"minimize_action": "Minimize",
 		"mobile_label": "Mobile",
 		"modified_label": "Modified",
 		"month_label": "Month",
@@ -848,6 +849,7 @@ export default {
 		"onlyPrivateAccountFeature_msg": "Gift cards may only be redeemed by private accounts",
 		"onlyPrivateComputer_msg": "Only choose this option if you are using a private device.",
 		"openCamera_action": "Camera",
+		"openDraft_label": "Open Draft",
 		"openKnowledgebase_action": "Open the knowledgebase window",
 		"openNewWindow_action": "New Window",
 		"openTemplatePopup_msg": "Open templates pop-up",
@@ -1388,6 +1390,8 @@ export default {
 		"languageArmenian_label": "Armenian",
 		"languageNorwegianBokmal_label": "Norwegian Bokmål",
 		"languageTajik_label": "Tajik",
-		"languageSerboCroatian_label": "Serbo-Croatian"
+		"languageSerboCroatian_label": "Serbo-Croatian",
+		"draftSaved_msg": "Draft saved.",
+		"draftNotSaved_msg": "Draft not saved."
 	}
 }

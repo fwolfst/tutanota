@@ -776,6 +776,7 @@ export default {
 		"messageTooLong_msg": "Deine Nachricht ist zu lang. Es sind bis zu {length} Zeichen erlaubt.",
 		"message_label": "Benachrichtigung",
 		"microphoneUsageDescription_msg": "Wird zum Aufnehmen von Videos benötigt.",
+		"minimize_action": "Minimieren",
 		"mobile_label": "Mobil",
 		"modified_label": "Geändert",
 		"month_label": "Monat",
@@ -852,6 +853,7 @@ export default {
 		"onlyPrivateAccountFeature_msg": "Gutscheine können nur von private Accounts eingelöst werden",
 		"onlyPrivateComputer_msg": "Wähle diese Option nur bei der Verwendung eines privaten Geräts.",
 		"openCamera_action": "Kamera",
+		"openDraft_label": "Entwurf öffnen",
 		"openKnowledgebase_action": "Öffnen des Fensters der Knowledgebase",
 		"openNewWindow_action": "Neues Fenster",
 		"openTemplatePopup_msg": "Öffnen des Vorlagen-Pop-ups",
@@ -1392,6 +1394,7 @@ export default {
 		"languageArmenian_label": "Armenisch",
 		"languageNorwegianBokmal_label": "Norwegisches Bokmål",
 		"languageTajik_label": "Tadschikisch",
-		"languageSerboCroatian_label": "Serbokroatisch"
+		"languageSerboCroatian_label": "Serbokroatisch",
+		"draftSaved_msg": "Entwurf gespeichert."
 	}
 }
