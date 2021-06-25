@@ -787,6 +787,7 @@ export class SendMailModel {
 			})
 			.catch(FileNotFoundError, () => {throw new UserError("couldNotAttachFile_msg")})
 			.catch(PreconditionFailedError, () => {throw new UserError("operationStillActive_msg")})
+			.catch(MailBodyTooLargeError, () => {throw new UserError("mailBodyTooLarge_msg")})
 	}
 
 	/**

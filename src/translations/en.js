@@ -1388,6 +1388,7 @@ export default {
 		"languageArmenian_label": "Armenian",
 		"languageNorwegianBokmal_label": "Norwegian Bokmål",
 		"languageTajik_label": "Tajik",
-		"languageSerboCroatian_label": "Serbo-Croatian"
+		"languageSerboCroatian_label": "Serbo-Croatian",
+		"mailBodyTooLarge_msg": "The mail couldn't be sent because it exceeds the maximum size limit"
 	}
 }

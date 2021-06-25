@@ -266,7 +266,7 @@ export class MailFacade {
 	_createAddedAttachments(providedFiles: ?Attachments, existingFileIds: IdTuple[], mailGroupKey: Aes128Key): Promise<DraftAttachment[]> {
 		if (providedFiles) {
 			return Promise
-				.mapSeries((providedFiles: any), providedFile => {
+				.mapSeries((providedFiles:\ any), providedFile => {
 					// check if this is a new attachment or an existing one
 					if (providedFile._type === "DataFile") {
 						// user added attachment
