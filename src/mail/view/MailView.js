@@ -235,25 +235,6 @@ export class MailView implements CurrentView {
 		})
 	}
 
-	// returns buttons for the dropdown to be rendered when clicking 'new mail' button, iff mails have been minimized on mobile
-	renderMinimizedEditorsDropdown(): Array<ButtonAttrs> {
-		let buttonAttrs = [
-			{
-				label: "newMail_action",
-				click: () => this._showNewMailDialog().catch(PermissionError, noOp),
-				type: ButtonType.Dropdown
-			}
-		]
-		locator.minimizedMailModel.getMinimizedEditors().map(editor => {
-			buttonAttrs.push({
-				label: () => editor.sendMailModel.getSubject() !== "" ? editor.sendMailModel.getSubject() : lang.get("openDraft_label"),
-				click: () => locator.minimizedMailModel.reopenMinimizedEditor(editor),
-				type: ButtonType.Dropdown
-			})
-		})
-		return buttonAttrs
-	}
-
 	getViewSlider(): ?IViewSlider {
 		return this.viewSlider
 	}

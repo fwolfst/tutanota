@@ -25,7 +25,7 @@ import {RichTextToolbar} from "../../gui/base/RichTextToolbar"
 import {isApp, isBrowser, isDesktop} from "../../api/common/Env"
 import {Icons} from "../../gui/base/icons/Icons"
 import {RecipientInfoType} from "../../api/common/RecipientInfo"
-import {animations, DefaultAnimationTime, height, opacity} from "../../gui/animation/Animations"
+import {animations, height, opacity} from "../../gui/animation/Animations"
 import type {TextFieldAttrs} from "../../gui/base/TextFieldN"
 import {TextFieldN} from "../../gui/base/TextFieldN"
 import {
@@ -508,9 +508,9 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	const save = (showProgress: boolean = true) => {
 		const savePromise = model.saveDraft(true, MailMethod.NONE, showProgress ? showProgressDialog : noopBlockingWaitHandler)
 		savePromise
-            .catch(UserError, err => Dialog.error(() => err.message))
-            .catch(FileNotFoundError, () => Dialog.error("couldNotAttachFile_msg"))
-            .catch(PreconditionFailedError, () => Dialog.error("operationStillActive_msg"))
+			.catch(UserError, err => Dialog.error(() => err.message))
+			.catch(FileNotFoundError, () => Dialog.error("couldNotAttachFile_msg"))
+			.catch(PreconditionFailedError, () => Dialog.error("operationStillActive_msg"))
 		return savePromise
 	}
 	const send = () => {
@@ -538,11 +538,8 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	}
 
 	const minimize = () => {
-		const savePromise= save(false)
-		const minimizedMailEditor = locator.minimizedMailModel.minimizeMailEditor(dialog, model, dispose, savePromise)
-		setTimeout(() => {
-			showMinimizedMailEditor(minimizedMailEditor)
-		}, DefaultAnimationTime)
+		const savePromise = save(false)
+		showMinimizedMailEditor(dialog, model, dispose, savePromise)
 	}
 
 	const closeButtonAttrs = {

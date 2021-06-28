@@ -5,13 +5,13 @@ import type {SendMailModel} from "../editor/SendMailModel"
 import {lastThrow, remove} from "../../api/common/utils/ArrayUtils"
 import type {Mail} from "../../api/entities/tutanota/Mail"
 import {isSameId} from "../../api/common/utils/EntityUtils"
-import stream from "mithril/stream/stream.js"
 
 export type MinimizedEditor = {
 	dialog: Dialog,
 	sendMailModel: SendMailModel, // we pass sendMailModel for easier access to contents of mail,
 	dispose: () => void, // disposes dialog and templatePopup eventListeners when minimized mail is removed
-	savePromise: Promise<void>
+	savePromise: Promise<void>,
+	closeOverlayFunction: () => Promise<void>
 }
 
 /**
@@ -24,7 +24,7 @@ export class MinimizedMailEditorViewModel {
 		this._minimizedEditors = []
 	}
 
-	minimizeMailEditor(dialog: Dialog, sendMailModel: SendMailModel, dispose: () => void, savePromise: Promise<void>): MinimizedEditor {
+	minimizeMailEditor(dialog: Dialog, sendMailModel: SendMailModel, dispose: () => void, savePromise: Promise<void>, closeOverlayFunction: ()=> Promise<void>): MinimizedEditor {
 		dialog.close()
 		// disallow creation of duplicate minimized mails
 		if (!this._minimizedEditors.find(editor => editor.dialog === dialog)) {
@@ -32,7 +32,8 @@ export class MinimizedMailEditorViewModel {
 				sendMailModel: sendMailModel,
 				dialog: dialog,
 				dispose: dispose,
-				savePromise: savePromise
+				savePromise: savePromise,
+				closeOverlayFunction
 			})
 		}
 		return lastThrow(this._minimizedEditors)
@@ -40,12 +41,14 @@ export class MinimizedMailEditorViewModel {
 
 	// fully removes and reopens clicked mail
 	reopenMinimizedEditor(editor: MinimizedEditor): void {
+		editor.closeOverlayFunction()
 		editor.dialog.show()
 		remove(this._minimizedEditors, editor)
 	}
 
 	// fully removes clicked mail
 	removeMinimizedEditor(editor: MinimizedEditor): void {
+		editor.closeOverlayFunction()
 		editor.dispose()
 		remove(this._minimizedEditors, editor)
 	}
