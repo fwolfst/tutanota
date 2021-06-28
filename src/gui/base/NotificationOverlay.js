@@ -10,7 +10,7 @@ import {ButtonN, ButtonType} from "./ButtonN"
 
 assertMainOrNode()
 
-export type NotificationOverlayAttrs = {|
+type NotificationOverlayAttrs = {|
 	message: Component,
 	buttons: Array<ButtonAttrs>
 |}
@@ -19,7 +19,7 @@ export type NotificationOverlayAttrs = {|
 const notificationQueue = []
 let currentAnimationTimeout: ?TimeoutID = null
 
-export class NotificationOverlay implements MComponent<NotificationOverlayAttrs> {
+class NotificationOverlay implements MComponent<NotificationOverlayAttrs> {
 	view(vnode: Vnode<NotificationOverlayAttrs>): ?Children {
 		return m(".notification-overlay-content.flex.flex-column.flex-space-between", [
 			m(vnode.attrs.message),

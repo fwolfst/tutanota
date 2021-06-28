@@ -30,6 +30,7 @@ assertMainOrNode()
 const MINIMIZED_OVERLAY_WIDTH_WIDE = 350;
 const MINIMIZED_OVERLAY_WIDTH_SMALL = 220;
 const MINIMIZED_EDITOR_HEIGHT = size.button_height + 2 * size.vpad_xs;
+const COUNTER_POS_OFFSET = px(-8)
 
 export function showMinimizedMailEditor(dialog: Dialog, sendMailModel: SendMailModel, dispose: () => void, savePromise: Promise<void>): void {
 	const viewModel = locator.minimizedMailModel
@@ -116,7 +117,7 @@ function showMinimizedEditorOverlay(viewModel: MinimizedMailEditorViewModel, min
 					}, [
 						m(CounterBadge, {
 							count: viewModel._minimizedEditors.indexOf(minimizedEditor) + 1,
-							position: {top: px(-8), right: px(-8)},
+							position: {top: COUNTER_POS_OFFSET, right: COUNTER_POS_OFFSET},
 							color: theme.navigation_button_icon,
 							background: getNavButtonIconBackground()
 						}),

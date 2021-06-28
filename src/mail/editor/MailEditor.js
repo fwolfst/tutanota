@@ -501,7 +501,6 @@ export class MailEditor implements MComponent<MailEditorAttrs> {
 function createMailEditorDialog(model: SendMailModel, blockExternalContent: boolean = false, inlineImages?: Promise<InlineImages>): Dialog {
 	let dialog: Dialog
 	let mailEditorAttrs: MailEditorAttrs
-	let domCloseButton: HTMLElement
 
 	// Returning the promise from sendMailModel.saveDraft before all the catches allows us to use the return value to determine if saving was successful.
 	// This was introduced for showing the correct status on the minimized mail editor.
@@ -546,7 +545,6 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 		label: "close_alt",
 		click: (event, dom) => minimize(),
 		type: ButtonType.Secondary,
-		oncreate: vnode => domCloseButton = vnode.dom
 	}
 
 	let windowCloseUnsubscribe = () => false
@@ -615,17 +613,13 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	)
 
 	const shortcuts = [
-		{key: Keys.ESC, exec() { closeButtonAttrs.click(newMouseEvent(), domCloseButton) }, help: "close_alt"},
+		{key: Keys.ESC, exec: minimize, help: "close_alt"},
 		{key: Keys.S, ctrl: true, exec: () => { save() }, help: "save_action"},
 		{key: Keys.S, ctrl: true, shift: true, exec: send, help: "send_action"},
-		{key: Keys.M, ctrl: true, exec: () => minimize(), help: "minimize_action"},
 		{key: Keys.RETURN, ctrl: true, exec: send, help: "send_action"}
 	]
 
 	dialog = Dialog.largeDialogN(headerBarAttrs, MailEditor, mailEditorAttrs,)
-	dialog.setCloseHandler(() => {
-		closeButtonAttrs.click(newMouseEvent(), domCloseButton)
-	})
 	for (let shortcut of shortcuts) {
 		dialog.addShortcut(shortcut)
 	}

@@ -36,6 +36,7 @@ import {TextFieldN} from "../../gui/base/TextFieldN"
 import {showProgressDialog} from "../../gui/dialogs/ProgressDialog"
 import {DropDownSelectorN} from "../../gui/base/DropDownSelectorN"
 import type {InputField} from "../../api/entities/tutanota/InputField"
+import type {WindowUnsubscribe} from "../../misc/WindowFacade"
 
 assertMainOrNode()
 
@@ -51,7 +52,7 @@ export class ContactFormRequestDialog {
 	_notificationEmailAddress: string;
 	_passwordForm: PasswordForm;
 	_privacyPolicyAccepted: Stream<boolean>;
-	_windowCloseUnsubscribe: () => boolean;
+	_windowCloseUnsubscribe: WindowUnsubscribe;
 
 	/**
 	 * Creates a new draft message. Invoke initAsResponse or initFromDraft if this message should be a response
@@ -65,7 +66,7 @@ export class ContactFormRequestDialog {
 		this._statisticFields = new Map()
 		this._subject = ""
 		this._notificationEmailAddress = ""
-		this._windowCloseUnsubscribe = () => false
+		this._windowCloseUnsubscribe = noOp
 		this._passwordForm = new PasswordForm(false, false, true, "contactFormEnterPasswordInfo_msg")
 
 		this._privacyPolicyAccepted = stream(false)

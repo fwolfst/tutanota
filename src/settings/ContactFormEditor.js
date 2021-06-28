@@ -5,7 +5,7 @@ import {Button} from "../gui/base/Button"
 import {lang, languages} from "../misc/LanguageViewModel"
 import {BookingItemFeatureType, GroupType, Keys} from "../api/common/TutanotaConstants"
 import {load, loadAll, setup, update} from "../api/main/Entity"
-import {getWhitelabelDomain, neverNull} from "../api/common/utils/Utils"
+import {getWhitelabelDomain, neverNull, noOp} from "../api/common/utils/Utils"
 import {assertMainOrNode} from "../api/common/Env"
 import {logins} from "../api/main/LoginController"
 import {CustomerTypeRef} from "../api/entities/sys/Customer"
@@ -155,7 +155,7 @@ export class ContactFormEditor {
 			middle: () => lang.get(this._createNew ? "createContactForm_label" : "editContactForm_label")
 		}
 
-		let windowCloseUnsubscribe = () => false
+		let windowCloseUnsubscribe = noOp
 		this.view = () => {
 			return m("#contact-editor.pb", {
 				oncreate: vnode => windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true),

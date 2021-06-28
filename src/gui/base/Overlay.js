@@ -66,7 +66,7 @@ export const overlay = {
 			display: overlays.length > 0 ? "" : 'none' // display: null not working for IE11
 		},
 		"aria-hidden": overlays.length === 0
-	}, overlays.map((overlayAttrs, index) => {
+	}, overlays.map((overlayAttrs) => {
 		const [attrs, dom, key] = overlayAttrs
 		const position = attrs.position()
 

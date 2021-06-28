@@ -10,6 +10,9 @@ assertMainOrNodeBoot()
 
 export type KeyboardSizeListener = (keyboardSize: number) => mixed;
 
+export type WindowUnsubscribe = () => void
+
+
 export class WindowFacade {
 	_windowSizeListeners: windowSizeListener[];
 	resizeTimeout: ?AnimationFrameID | ?TimeoutID;
@@ -56,11 +59,12 @@ export class WindowFacade {
 	}
 
 	/**
-	 *
-	 * @param listener
-	 * @returns {function(): void}
+	 * Adds a window close listener to the facade to get notified when the tab or application window is closed.
+	 * A listener can intercept the (accidental) closing by returning true.
+	 * @param listener Function that is called when window is closed. Should return true if user should confirm closing.
+	 * @return A function to unsubscribe the listener.
 	 */
-	addWindowCloseListener(listener: () => boolean): Function {
+	addWindowCloseListener(listener: () => boolean): WindowUnsubscribe {
 		this._windowCloseListeners.add(listener)
 		this._checkWindowClosing(this._windowCloseListeners.size > 0)
 		return () => {
