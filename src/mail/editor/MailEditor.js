@@ -538,7 +538,7 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 
 	const minimize = () => {
 		const savePromise = save(false)
-		showMinimizedMailEditor(dialog, model, dispose, savePromise)
+		showMinimizedMailEditor(dialog, model, locator.minimizedMailModel, locator.eventController, dispose, savePromise)
 	}
 
 	const closeButtonAttrs = {
