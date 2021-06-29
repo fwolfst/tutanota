@@ -21,7 +21,8 @@ pipeline {
 			steps {
 				script {
 					createAppfile()
-					def stage = (${params.LANE} == 'adhoctest') ? 'test' : 'prod'
+					def stage = (params.LANE == 'adhoctest') ? 'test' : 'prod'
+					sh "echo 'stage: ${stage}'"
 					sh "npm ci"
 					sh "node dist ${stage}"
 					sh "node buildSrc/prepareMobileBuild.js dist"
