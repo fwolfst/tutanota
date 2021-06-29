@@ -46,13 +46,13 @@ def createAppfile() {
 
 		sh "echo \"app_identifier('${app_identifier}')\" > ${appfile}"
 
-		withCredentials([string(credentialsId: 'apple-id', variable: 'apple_id']) {
+		withCredentials([string(credentialsId: 'apple-id', variable: 'apple_id')]) {
 			sh "echo \"apple_id('${apple_id}')\" >> ${appfile}"
 		}
-		withCredentials([string(credentialsId: 'itc-team-id', variable: 'itc_team_id']) {
+		withCredentials([string(credentialsId: 'itc-team-id', variable: 'itc_team_id')]) {
 			sh "echo \"itc_team_id('${itc_team_id}')\" >> ${appfile}"
 		}
-		withCredentials([string(credentialsId: 'team-id', variable: 'team_id']) {
+		withCredentials([string(credentialsId: 'team-id', variable: 'team_id')]) {
 			sh "echo \"team_id('${team_id}')\" >> ${appfile}"
 		}
 	}
