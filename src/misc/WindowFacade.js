@@ -1,6 +1,6 @@
 // @flow
 import m from "mithril"
-import {assertMainOrNodeBoot, isApp, isDesktop, isIOSApp, Mode} from "../api/common/Env"
+import {assertMainOrNodeBoot, isApp, isIOSApp, Mode} from "../api/common/Env"
 import {lang} from "./LanguageViewModel"
 import type {WorkerClient} from "../api/main/WorkerClient"
 import {client} from "./ClientDetector"
@@ -10,14 +10,11 @@ assertMainOrNodeBoot()
 
 export type KeyboardSizeListener = (keyboardSize: number) => mixed;
 
-export type WindowUnsubscribe = () => void
-
-
-export class WindowFacade {
+class WindowFacade {
 	_windowSizeListeners: windowSizeListener[];
 	resizeTimeout: ?AnimationFrameID | ?TimeoutID;
 	windowCloseConfirmation: boolean;
-	_windowCloseListeners: Set<(e: Event) => boolean>;
+	_windowCloseListeners: Set<(e: Event) => mixed>;
 	_historyStateEventListeners: Array<(e: Event) => boolean> = [];
 	_worker: WorkerClient;
 	// following two properties are for the iOS
@@ -58,13 +55,7 @@ export class WindowFacade {
 		}
 	}
 
-	/**
-	 * Adds a window close listener to the facade to get notified when the tab or application window is closed.
-	 * A listener can intercept the (accidental) closing by returning true.
-	 * @param listener Function that is called when window is closed. Should return true if user should confirm closing.
-	 * @return A function to unsubscribe the listener.
-	 */
-	addWindowCloseListener(listener: () => boolean): WindowUnsubscribe {
+	addWindowCloseListener(listener: () => mixed): Function {
 		this._windowCloseListeners.add(listener)
 		this._checkWindowClosing(this._windowCloseListeners.size > 0)
 		return () => {
@@ -120,7 +111,7 @@ export class WindowFacade {
 
 		// needed to help the MacOs desktop client to distinguish between Cmd+Arrow to navigate the history
 		// and Cmd+Arrow to navigate a text editor
-		if (env.mode === Mode.Desktop && client.isMacOS && window.addEventListener) {
+		if(env.mode === Mode.Desktop && client.isMacOS && window.addEventListener) {
 			window.addEventListener('keydown', e => {
 				if (!e.metaKey || e.key === 'Meta') return
 				// prevent history nav if the active element is an input / squire editor
@@ -152,25 +143,7 @@ export class WindowFacade {
 	_beforeUnload(e: any): ?string { // BeforeUnloadEvent
 		console.log("windowfacade._beforeUnload")
 		this._notifyCloseListeners(e)
-		let anyListeners = false
-		this._windowCloseListeners.forEach(l => { // we are explicitly calling all of them, to make sure all side effects are executed
-			if (l(e)) {
-				anyListeners = true
-			}
-		})
-		if (anyListeners && isDesktop()) {
-			import("../gui/base/Dialog").then((dialogModule) => {
-				dialogModule.Dialog.confirm("closeWindowConfirmation_msg")
-				            .then((confirmed) => {
-					            if (confirmed) {
-						            logins.logout(true)
-					            }
-				            })
-			})
-			let m = lang.get("closeWindowConfirmation_msg")
-			e.returnValue = m // we have to stop the client from closing so that the dialog can be rendered
-			return m
-		} else if (anyListeners) {
+		if (this.windowCloseConfirmation) {
 			let m = lang.get("closeWindowConfirmation_msg")
 			e.returnValue = m
 			return m

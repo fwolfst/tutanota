@@ -36,7 +36,6 @@ import {TextFieldN} from "../../gui/base/TextFieldN"
 import {showProgressDialog} from "../../gui/dialogs/ProgressDialog"
 import {DropDownSelectorN} from "../../gui/base/DropDownSelectorN"
 import type {InputField} from "../../api/entities/tutanota/InputField"
-import type {WindowUnsubscribe} from "../../misc/WindowFacade"
 
 assertMainOrNode()
 
@@ -52,7 +51,7 @@ export class ContactFormRequestDialog {
 	_notificationEmailAddress: string;
 	_passwordForm: PasswordForm;
 	_privacyPolicyAccepted: Stream<boolean>;
-	_windowCloseUnsubscribe: WindowUnsubscribe;
+	_windowCloseUnsubscribe: () => void;
 
 	/**
 	 * Creates a new draft message. Invoke initAsResponse or initFromDraft if this message should be a response
@@ -96,6 +95,7 @@ export class ContactFormRequestDialog {
 		                     }).setCloseHandler(() => this._close())
 
 		worker.createContactFormUserGroupData()
+
 	}
 
 	view: Function = () => {
@@ -134,7 +134,7 @@ export class ContactFormRequestDialog {
 
 		return m("#mail-editor.text.pb", {
 			oncreate: vnode => {
-				this._windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true)
+				this._windowCloseUnsubscribe = windowFacade.addWindowCloseListener(noOp)
 			},
 			onremove: vnode => this._windowCloseUnsubscribe(),
 			ondragover: (ev) => {

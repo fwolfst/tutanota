@@ -21,7 +21,6 @@ import {createContact} from "../api/entities/tutanota/Contact"
 import {clone, downcast, neverNull, noOp, typedEntries} from "../api/common/utils/Utils"
 import {assertMainOrNode} from "../api/common/Env"
 import {findAndRemove, lastIndex, lastThrow} from "../api/common/utils/ArrayUtils"
-import type {WindowUnsubscribe} from "../misc/WindowFacade"
 import {windowFacade} from "../misc/WindowFacade"
 import {logins} from "../api/main/LoginController"
 import {createBirthday} from "../api/entities/tutanota/Birthday"
@@ -64,7 +63,7 @@ export class ContactEditor {
 	birthday: Stream<string>
 
 	_newContactIdReceiver: ?(contactId: Id) => mixed
-	windowCloseUnsubscribe: WindowUnsubscribe
+	windowCloseUnsubscribe: () => mixed
 	_isNewContact: boolean
 
 	/**
@@ -111,7 +110,7 @@ export class ContactEditor {
 	}
 
 	oncreate() {
-		this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true)
+		this.windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {})
 	}
 
 	onremove() {

@@ -59,6 +59,7 @@ import {KnowledgeBaseModel} from "../../knowledgebase/model/KnowledgeBaseModel"
 import {styles} from "../../gui/styles"
 import {showMinimizedMailEditor} from "../view/MinimizedMailEditorOverlay"
 import {SaveStatus} from "../model/MinimizedMailEditorViewModel"
+import {newMouseEvent} from "../../gui/HtmlUtils"
 
 export type MailEditorAttrs = {
 	model: SendMailModel,
@@ -501,6 +502,7 @@ export class MailEditor implements MComponent<MailEditorAttrs> {
 function createMailEditorDialog(model: SendMailModel, blockExternalContent: boolean = false, inlineImages?: Promise<InlineImages>): Dialog {
 	let dialog: Dialog
 	let mailEditorAttrs: MailEditorAttrs
+	let domCloseButton: HTMLElement
 
 	const save = (showProgress: boolean = true) => {
 		return model.saveDraft(true, MailMethod.NONE, showProgress ? showProgressDialog : noopBlockingWaitHandler)
@@ -545,9 +547,10 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 		label: "close_alt",
 		click: (event, dom) => minimize(),
 		type: ButtonType.Secondary,
+		oncreate: vnode => domCloseButton = vnode.dom
 	}
 
-	let windowCloseUnsubscribe = () => false
+	let windowCloseUnsubscribe = () => {}
 	const headerBarAttrs: DialogHeaderBarAttrs = {
 		left: [closeButtonAttrs],
 		right: [
@@ -561,11 +564,11 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 		create: () => {
 			if (isBrowser()) {
 				// Have a simple listener on browser, so their browser will make the user ask if they are sure they want to close when closing the tab/window
-				windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => true)
+				windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {})
 			} else if (isDesktop()) {
 				// Simulate clicking the Close button when on the desktop so they can see they can save a draft rather than completely closing it
 				windowCloseUnsubscribe = windowFacade.addWindowCloseListener(() => {
-					return true
+					closeButtonAttrs.click(newMouseEvent(), domCloseButton)
 				})
 			}
 		},
@@ -620,6 +623,7 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	]
 
 	dialog = Dialog.largeDialogN(headerBarAttrs, MailEditor, mailEditorAttrs,)
+	dialog.setCloseHandler(() => closeButtonAttrs.click(newMouseEvent(), domCloseButton))
 	for (let shortcut of shortcuts) {
 		dialog.addShortcut(shortcut)
 	}
