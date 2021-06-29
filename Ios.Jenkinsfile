@@ -22,14 +22,13 @@ pipeline {
 				script {
 					createAppfile()
 					def stage = (params.LANE == 'adhoctest') ? 'test' : 'prod'
-					sh "echo 'stage: ${stage}'"
 					sh "npm ci"
 					sh "node dist ${stage}"
 					sh "node buildSrc/prepareMobileBuild.js dist"
 					dir('app-ios') {
-						sh "fastlane ios ${params.LANE}"
+						sh "fastlane ${params.LANE}"
 					}
-					if (${params.LANE == 'release'}) {
+					if (params.LANE == 'release'}) {
 						def tag = "tutanota-ios-release-${VERSION}"
 						sh "git tag ${tag}"
 						sh "git push --tags"
