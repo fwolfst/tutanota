@@ -28,7 +28,7 @@ pipeline {
 					dir('app-ios') {
 						sh "fastlane ${params.LANE}"
 					}
-					if (params.LANE == 'release'}) {
+					if (params.LANE == 'release') {
 						def tag = "tutanota-ios-release-${VERSION}"
 						sh "git tag ${tag}"
 						sh "git push --tags"
