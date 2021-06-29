@@ -1,0 +1,73 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Push a new release to AppStore"
+  lane :release do
+    build_app(
+    	scheme: "tutanota-dist",
+		export_options: {
+			provisioningProfiles: {
+            	"de.tutao.tutanota" => "de.tutao.tutanota App Store"
+            }
+		},
+		include_bitcode: true,
+		include_symbols: true
+    )
+    notification(subtitle: "Finished Building", message: "Uploading to app store ...", sound: "Hero")
+    upload_to_app_store(
+		skip_screenshots: true,
+		submit_for_review: false
+    )
+  end
+
+  lane :adhoc do
+	build_app(scheme: "tutanota-dist",
+			output_directory: "releases",
+			output_name: "tutanota-" + get_version_number(),
+			export_options: {
+				method: "ad-hoc",
+				provisioningProfiles: {
+					"de.tutao.tutanota" => "de.tutao.tutanota Ad Hoc"
+				}
+			},
+			include_bitcode: true
+		)
+  end
+
+    lane :adhoctest do
+  	build_app(scheme: "tutanota-dist",
+  			output_directory: "releases",
+  			output_name: "tutanota-" + get_version_number() + "-test",
+  			export_options: {
+  				method: "ad-hoc",
+  				provisioningProfiles: {
+  					"de.tutao.tutanota" => "de.tutao.tutanota Ad Hoc"
+  				}
+  			},
+  			include_bitcode: true
+  		)
+    end
+
+  lane :test do
+	puts Dir.pwd
+	puts Dir.pwd
+  end
+
+
+end
