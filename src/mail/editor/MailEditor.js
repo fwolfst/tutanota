@@ -37,7 +37,6 @@ import {
 	MailEditorRecipientField,
 } from "./MailEditorViewModel"
 import {ExpanderButtonN, ExpanderPanelN} from "../../gui/base/Expander"
-import {newMouseEvent} from "../../gui/HtmlUtils"
 import {windowFacade} from "../../misc/WindowFacade"
 import {UserError} from "../../api/main/UserError"
 import {showProgressDialog} from "../../gui/dialogs/ProgressDialog"
@@ -59,6 +58,7 @@ import {createKnowledgeBaseDialogInjection, createOpenKnowledgeBaseButtonAttrs} 
 import {KnowledgeBaseModel} from "../../knowledgebase/model/KnowledgeBaseModel"
 import {styles} from "../../gui/styles"
 import {showMinimizedMailEditor} from "../view/MinimizedMailEditorOverlay"
+import {SaveStatus} from "../model/MinimizedMailEditorViewModel"
 
 export type MailEditorAttrs = {
 	model: SendMailModel,
@@ -502,16 +502,10 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	let dialog: Dialog
 	let mailEditorAttrs: MailEditorAttrs
 
-	// Returning the promise from sendMailModel.saveDraft before all the catches allows us to use the return value to determine if saving was successful.
-	// This was introduced for showing the correct status on the minimized mail editor.
 	const save = (showProgress: boolean = true) => {
-		const savePromise = model.saveDraft(true, MailMethod.NONE, showProgress ? showProgressDialog : noopBlockingWaitHandler)
-		savePromise
-			.catch(UserError, err => Dialog.error(() => err.message))
-			.catch(FileNotFoundError, () => Dialog.error("couldNotAttachFile_msg"))
-			.catch(PreconditionFailedError, () => Dialog.error("operationStillActive_msg"))
-		return savePromise
+		return model.saveDraft(true, MailMethod.NONE, showProgress ? showProgressDialog : noopBlockingWaitHandler)
 	}
+
 	const send = () => {
 		try {
 			model.send(
@@ -537,8 +531,14 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 	}
 
 	const minimize = () => {
-		const savePromise = save(false)
-		showMinimizedMailEditor(dialog, model, locator.minimizedMailModel, locator.eventController, dispose, savePromise)
+		const saveStatus = stream(SaveStatus.Saving)
+		save(false)
+			.then(() => saveStatus(SaveStatus.Saved))
+			.catch((e) => {
+				saveStatus(SaveStatus.NotSaved)
+				handleSaveError(e)
+			})
+		showMinimizedMailEditor(dialog, model, locator.minimizedMailModel, locator.eventController, dispose, saveStatus)
 	}
 
 	const closeButtonAttrs = {
@@ -614,7 +614,7 @@ function createMailEditorDialog(model: SendMailModel, blockExternalContent: bool
 
 	const shortcuts = [
 		{key: Keys.ESC, exec: minimize, help: "close_alt"},
-		{key: Keys.S, ctrl: true, exec: () => { save() }, help: "save_action"},
+		{key: Keys.S, ctrl: true, exec: () => { save().catch(handleSaveError) }, help: "save_action"},
 		{key: Keys.S, ctrl: true, shift: true, exec: send, help: "send_action"},
 		{key: Keys.RETURN, ctrl: true, exec: send, help: "send_action"}
 	]
@@ -779,3 +779,15 @@ function _mailboxPromise(mailbox?: MailboxDetail): Promise<MailboxDetail> {
 		: locator.mailModel.getUserMailboxDetails()
 }
 
+
+function handleSaveError(e: Error) {
+	if (e instanceof UserError) {
+		Dialog.error(() => e.message)
+	} else if (e instanceof FileNotFoundError) {
+		Dialog.error("couldNotAttachFile_msg")
+	} else if (e instanceof PreconditionFailedError) {
+		Dialog.error("operationStillActive_msg")
+	} else {
+		throw e
+	}
+}

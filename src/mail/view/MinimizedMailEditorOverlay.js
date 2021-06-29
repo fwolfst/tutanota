@@ -10,7 +10,7 @@ import {styles} from "../../gui/styles"
 import {LayerType} from "../../RootView"
 import type {Dialog} from "../../gui/base/Dialog"
 import type {SendMailModel} from "../editor/SendMailModel"
-import type {MinimizedEditor} from "../model/MinimizedMailEditorViewModel"
+import type {MinimizedEditor, SaveStatusEnum} from "../model/MinimizedMailEditorViewModel"
 import {MinimizedMailEditorViewModel} from "../model/MinimizedMailEditorViewModel"
 import {MinimizedEditorOverlay} from "./MinimizedEditorOverlay"
 
@@ -20,11 +20,9 @@ const MINIMIZED_OVERLAY_WIDTH_WIDE = 350;
 const MINIMIZED_OVERLAY_WIDTH_SMALL = 220;
 const MINIMIZED_EDITOR_HEIGHT = size.button_height + 2 * size.vpad_xs;
 
-export function showMinimizedMailEditor(dialog: Dialog, sendMailModel: SendMailModel, viewModel: MinimizedMailEditorViewModel, eventController: EventController, dispose: () => void, savePromise: Promise<void>): void {
+export function showMinimizedMailEditor(dialog: Dialog, sendMailModel: SendMailModel, viewModel: MinimizedMailEditorViewModel, eventController: EventController, dispose: () => void, saveStatus: Stream<SaveStatusEnum>): void {
 	let closeOverlayFunction = () => Promise.resolve() // will be assigned with the actual close function when overlay is visible.
-	const minimizedEditor = viewModel.minimizeMailEditor(dialog, sendMailModel, dispose, savePromise, () => closeOverlayFunction())
-	// trigger update the status message after save is done.
-	savePromise.finally(() => m.redraw())
+	const minimizedEditor = viewModel.minimizeMailEditor(dialog, sendMailModel, dispose, saveStatus, () => closeOverlayFunction())
 	// only show overlay once editor is gone
 	setTimeout(() => {
 		closeOverlayFunction = showMinimizedEditorOverlay(viewModel, minimizedEditor, eventController)

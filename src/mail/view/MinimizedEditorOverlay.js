@@ -5,17 +5,18 @@ import {CounterBadge} from "../../gui/base/CounterBadge"
 import {getNavButtonIconBackground, theme} from "../../gui/theme"
 import {lang} from "../../misc/LanguageViewModel"
 import {ButtonColors, ButtonN, ButtonType} from "../../gui/base/ButtonN"
-import type {MinimizedEditor, MinimizedMailEditorViewModel} from "../model/MinimizedMailEditorViewModel"
+import type {MinimizedEditor, MinimizedMailEditorViewModel, SaveStatusEnum} from "../model/MinimizedMailEditorViewModel"
+import {SaveStatus} from "../model/MinimizedMailEditorViewModel"
 import {px} from "../../gui/size"
 import {Icons} from "../../gui/base/icons/Icons"
 import {styles} from "../../gui/styles"
 import type {EntityEventsListener, EntityUpdateData, EventController} from "../../api/main/EventController"
 import {isUpdateForTypeRef} from "../../api/main/EventController"
-import {noOp} from "../../api/common/utils/Utils"
 import {promptAndDeleteMails} from "./MailGuiUtils"
 import {MailTypeRef} from "../../api/entities/tutanota/Mail"
 import {OperationType} from "../../api/common/TutanotaConstants"
 import {isSameId} from "../../api/common/utils/EntityUtils"
+import {noOp} from "../../api/common/utils/Utils"
 
 const COUNTER_POS_OFFSET = px(-8)
 
@@ -36,7 +37,6 @@ export class MinimizedEditorOverlay implements MComponent<MinimizedEditorOverlay
 		this._listener = (updates: $ReadOnlyArray<EntityUpdateData>, eventOwnerGroupId: Id): Promise<*> => {
 			return Promise.each(updates, update => {
 				if (isUpdateForTypeRef(MailTypeRef, update) && update.operation === OperationType.DELETE) {
-					console.log("!!overlay entity update for mail")
 					let draft = minimizedEditor.sendMailModel.getDraft()
 					if (draft && isSameId(draft._id, [update.instanceListId, update.instanceId])) {
 						viewModel.removeMinimizedEditor(minimizedEditor)
@@ -65,18 +65,16 @@ export class MinimizedEditorOverlay implements MComponent<MinimizedEditorOverlay
 				label: "delete_action",
 				click: () => {
 					let model = minimizedEditor.sendMailModel
-					// only delete if save has finished
-					minimizedEditor.savePromise
-					               .catch(noOp) // An error in the save operation is handled when triggering save on a mail
-					               .finally(() => {
-						               const draft = model._draft
-						               if (draft) {
-							               promptAndDeleteMails(model.mails(), [draft], () => viewModel.removeMinimizedEditor(minimizedEditor))
-						               } else {
-							               // If we don't have a draft, an error must have occurred when trying to save on minimize.
-							               viewModel.removeMinimizedEditor(minimizedEditor)
-						               }
-					               })
+					viewModel.removeMinimizedEditor(minimizedEditor)
+					// only delete once save has finished
+					minimizedEditor.saveStatus.map(async (status) => {
+						if (status !== SaveStatus.Saving) {
+							const draft = model._draft
+							if (draft) {
+								await promptAndDeleteMails(model.mails(), [draft], noOp)
+							}
+						}
+					})
 				},
 				type: ButtonType.ActionLarge,
 				icon: () => Icons.Trash,
@@ -104,7 +102,7 @@ export class MinimizedEditorOverlay implements MComponent<MinimizedEditorOverlay
 						onclick: () => viewModel.reopenMinimizedEditor(minimizedEditor)
 					}, [
 						m(".b.text-ellipsis", subject ? subject : lang.get("newMail_action")),
-						m(".small.text-ellipsis", getStatusMessage(minimizedEditor.savePromise))
+						m(".small.text-ellipsis", getStatusMessage(minimizedEditor.saveStatus()))
 					]),
 					m(".flex.items-center.justify-right", buttons.map(b => b.isVisible && !b.isVisible() ? null : m(ButtonN, b))),
 				])
@@ -114,12 +112,15 @@ export class MinimizedEditorOverlay implements MComponent<MinimizedEditorOverlay
 }
 
 
-function getStatusMessage(savePromise: Promise<void>): string {
-	if (savePromise.isPending()) {
-		return lang.get("save_msg")
-	} else if (savePromise.isRejected()) {
-		return lang.get("draftNotSaved_msg")
-	} else {
-		return lang.get("draftSaved_msg")
+function getStatusMessage(saveStatus: SaveStatusEnum): string {
+	switch (saveStatus) {
+		case SaveStatus.Saving:
+			return lang.get("save_msg")
+		case SaveStatus.NotSaved:
+			return lang.get("draftNotSaved_msg")
+		case SaveStatus.Saved:
+			return lang.get("draftSaved_msg")
+		default:
+			return ''
 	}
 }

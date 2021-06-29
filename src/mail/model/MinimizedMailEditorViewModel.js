@@ -6,11 +6,18 @@ import {lastThrow, remove} from "../../api/common/utils/ArrayUtils"
 import type {Mail} from "../../api/entities/tutanota/Mail"
 import {isSameId} from "../../api/common/utils/EntityUtils"
 
+export const SaveStatus = Object.freeze({
+	Saving: 0,
+	Saved: 1,
+	NotSaved: 2,
+})
+export type SaveStatusEnum = $Values<typeof SaveStatus>;
+
 export type MinimizedEditor = {
 	dialog: Dialog,
 	sendMailModel: SendMailModel, // we pass sendMailModel for easier access to contents of mail,
 	dispose: () => void, // disposes dialog and templatePopup eventListeners when minimized mail is removed
-	savePromise: Promise<void>,
+	saveStatus: Stream<SaveStatusEnum>,
 	closeOverlayFunction: () => Promise<void>
 }
 
@@ -24,7 +31,7 @@ export class MinimizedMailEditorViewModel {
 		this._minimizedEditors = []
 	}
 
-	minimizeMailEditor(dialog: Dialog, sendMailModel: SendMailModel, dispose: () => void, savePromise: Promise<void>, closeOverlayFunction: ()=> Promise<void>): MinimizedEditor {
+	minimizeMailEditor(dialog: Dialog, sendMailModel: SendMailModel, dispose: () => void, saveStatus: Stream<SaveStatusEnum>, closeOverlayFunction: ()=> Promise<void>): MinimizedEditor {
 		dialog.close()
 		// disallow creation of duplicate minimized mails
 		if (!this._minimizedEditors.find(editor => editor.dialog === dialog)) {
@@ -32,7 +39,7 @@ export class MinimizedMailEditorViewModel {
 				sendMailModel: sendMailModel,
 				dialog: dialog,
 				dispose: dispose,
-				savePromise: savePromise,
+				saveStatus,
 				closeOverlayFunction
 			})
 		}
